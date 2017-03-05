@@ -13,6 +13,7 @@
     "cssnano": "^3.10.0",
     "postcss-cssnext": "^2.9.0",
     "postcss-nested": "^1.0.0",
+    "tough-cookie": "^2.3.2",
     "vue": "^2.2.0",
     "vue-router": "^2.2.0"
   },
