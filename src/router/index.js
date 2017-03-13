@@ -25,9 +25,13 @@ export default new Router({
     //   component: Blog,
     // },
     {
-      path: '*',
+      path: '/404',
       name: 'Page404',
       component: Page404,
+    },
+    {
+      path: '*',
+      redirect: '/404',
     },
   ],
 });

@@ -78,7 +78,7 @@ var webpackConfig = merge(baseWebpackConfig, {
       // Path to compiled app
       path.join(__dirname, '../dist'),
       // List of endpoints you wish to prerender
-      [ '/', '/about' ]
+      [ '/', '/about', '/404' ]
     )
   ]
 })

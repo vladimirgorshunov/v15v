@@ -10,7 +10,7 @@
         <span class="contact-me__text">Contact me via:</span>
         <ul class="contact-me__list">
           <li class="contact-me__item" v-for="link in links">
-            <a class="contact-me__link" :href="link.href">{{ link.text}}</a>
+            <a class="contact-me__link" :href="link.href" rel="noopener noreferrer" target="_blank" >{{ link.text}}</a>
           </li>
         </ul>
       </div>
