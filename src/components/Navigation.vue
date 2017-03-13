@@ -36,6 +36,9 @@ export default {
     }
   }
   .logo {
+    font-family: 'arvo', serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     display: inline-block;
     margin: 0;
     padding: 0;

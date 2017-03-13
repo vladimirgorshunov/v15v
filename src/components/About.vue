@@ -62,7 +62,7 @@ export default {
     width: 24.5rem;
     font-size: 1.0625rem;
     line-height: 1.455;
-    font-family: 'PT-Serif-Regular', 'PT Serif', Helvetica, Arial, sans-serif;
+    font-family: 'pt-serif', serif;
     a {
       color: #303030;
       text-decoration: underline;
