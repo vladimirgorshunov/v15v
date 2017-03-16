@@ -36,7 +36,7 @@ export default {
     }
   }
   .logo {
-    font-family: 'arvo', serif;
+    font-family: serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     display: inline-block;
@@ -47,6 +47,9 @@ export default {
     font-size: 4.5rem;
     color: #303030;
     transition: font-size 1s ease-out;
+  }
+  .wf-active .logo {
+    font-family: 'arvo', serif;
   }
   @media (max-width: 600px) {
     header {

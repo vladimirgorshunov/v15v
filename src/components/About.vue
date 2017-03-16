@@ -62,11 +62,14 @@ export default {
     width: 24.5rem;
     font-size: 1.0625rem;
     line-height: 1.455;
-    font-family: 'pt-serif', serif;
+    font-family: serif;
     a {
       color: #303030;
       text-decoration: underline;
     }
+  }
+  .wf-active p {
+    font-family: 'pt-serif', serif;
   }
   @media (max-width: 600px) {
     p {
