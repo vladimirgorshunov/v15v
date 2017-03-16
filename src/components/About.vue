@@ -61,8 +61,10 @@ export default {
     color: #303030;
     width: 24.5rem;
     font-size: 1.0625rem;
+    font-family: Georgia, serif;
     line-height: 1.455;
-    font-family: serif;
+    letter-spacing: 0.1px;
+    word-spacing: -0.25px;
     a {
       color: #303030;
       text-decoration: underline;
