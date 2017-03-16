@@ -14,7 +14,7 @@
       if (window.localStorage && window.localStorage._tk_cache) {
         document.documentElement.classList.add('wf-active');
         const script = document.createElement('script');
-        script.innerHTML = localStorage._tk_cache + ';(function () {var timeout = setTimeout(function () {document.documentElement.classList.remove("wf-active");}, 300); Typekit.load({ async: false, active: function () { clearTimeout(timeout); }});})();';
+        script.innerHTML = '/*cached*/' + localStorage._tk_cache + ';Typekit.load({ async: false });';
         document.head.appendChild(script);
       }
       window._tk_onload = function () {
