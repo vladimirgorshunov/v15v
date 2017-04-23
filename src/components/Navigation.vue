@@ -1,8 +1,8 @@
 <template>
   <header class="nav">
-    <span class="logo">
+    <router-link to="about" class="logo" active-class="active">
       V<span class="full-logo">ladimir <br></span>G<span class="full-logo">orshunov</span>
-    </span>
+    </router-link>
     <ul class="list">
       <li class="item">
         <router-link to="about" active-class="active" class="link">ABOUT</router-link>
@@ -45,8 +45,12 @@ export default {
     font-weight: normal;
     line-height: 1;
     font-size: 4.5rem;
+    text-decoration: none;
     color: #303030;
     transition: font-size 1s ease-out;
+  }
+  .logo.active {
+    cursor: default;
   }
   .wf-active .logo {
     font-family: 'arvo', serif;
