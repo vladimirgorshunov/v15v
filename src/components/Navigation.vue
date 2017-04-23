@@ -25,12 +25,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  header {
+  .nav {
     position: relative;
     margin: 4.5rem;
   }
   @media (max-width: 700px) {
-    header {
+    .nav {
       margin-left: 2.25rem;
       margin-right: 2.25rem;
     }
@@ -52,7 +52,7 @@ export default {
     font-family: 'arvo', serif;
   }
   @media (max-width: 600px) {
-    header {
+    .nav {
       margin-top: 2.25rem;
       margin-bottom: 2.25rem;
     }
@@ -78,30 +78,27 @@ export default {
     font-weight: bold;
     font-size: 1rem;
     margin-right: 2.25rem;
-    
-    &:last-child {
-      margin-right: 0;
-    }
   }
+  .item:last-child {
+    margin-right: 0;
+  }
+  
   .link {
     text-decoration: none;
     color: #303030;
-  
-    &.active {
-      cursor: default;
-      color: #a2a2a2;
-    }
   }
-  .nav--blog {
-    .full-logo {
-      display: none;
-    }
+
+  .link.active {
+    cursor: default;
+    color: #a2a2a2;
   }
-  .nav--about {
-    .list {
-      right: 0;
-      left: initial;
-      transform: translate(0, -50%)
-    }
+  .nav--blog .full-logo,
+  .nav--404 .full-logo {
+    display: none;
+  }
+  .nav--about .list {
+    right: 0;
+    left: initial;
+    transform: translate(0, -50%)
   }
 </style>

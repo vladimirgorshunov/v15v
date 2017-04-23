@@ -65,10 +65,10 @@ export default {
     line-height: 1.455;
     letter-spacing: 0.1px;
     word-spacing: -0.25px;
-    a {
-      color: #303030;
-      text-decoration: underline;
-    }
+  }
+  p a {
+    color: #303030;
+    text-decoration: underline;
   }
   .wf-active p {
     font-family: 'pt-serif', serif;
