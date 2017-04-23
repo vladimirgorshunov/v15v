@@ -100,6 +100,9 @@ export default {
   .nav--404 .full-logo {
     display: none;
   }
+  .nav--404 .list {
+    display: none;
+  }
   .nav--about .list {
     right: 0;
     left: initial;
