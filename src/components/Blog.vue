@@ -1,6 +1,5 @@
 <template>
   <div>
-    <navigation class="nav--blog"></navigation>
     <div class="about">
       {{ msg }}
     </div>
@@ -10,10 +9,15 @@
 <script>
 export default {
   name: 'blog',
+  props: ['navigationClass'],
   data() {
     return {
       msg: 'blog works, for now',
     };
+  },
+  created() {
+    this.navigationClass = 'nav--blog';
+    this.$emit('navClassChanged', this.navigationClass);
   },
 };
 </script>

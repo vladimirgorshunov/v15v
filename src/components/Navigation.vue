@@ -1,7 +1,10 @@
 <template>
   <header class="nav">
     <router-link to="about" class="logo" active-class="active">
-      V<span class="full-logo">ladimir <br></span>G<span class="full-logo">orshunov</span>
+      V<transition name="fade">
+        <span class="full-logo">ladimir <br></span>
+      </transition>G<transition name="fade"><span class="full-logo">orshunov</span></transition>
+      
     </router-link>
     <ul class="list">
       <li class="item">

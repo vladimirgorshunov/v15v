@@ -1,17 +1,24 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <navigation :class="[navClass]"></navigation>
+    <router-view :navigationClass="navClass" @navClassChanged="navClass = $event"></router-view>
   </div>
 </template>
 
 <script>
-  import Vue from 'vue';
   import Navigation from './components/Navigation';
   
   export default {
     name: 'app',
+    components: {
+      Navigation,
+    },
+    data() {
+      return {
+        navClass: '',
+      };
+    },
   };
-  Vue.component('navigation', Navigation);
 
 </script>
 

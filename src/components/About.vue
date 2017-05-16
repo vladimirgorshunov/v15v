@@ -1,6 +1,5 @@
 <template>
   <div>
-    <navigation class="nav--about"></navigation>
     <div class="about">
       <p>
         I am a web-developer with more than 4 years of experience in creating web sites and applications.<br>
@@ -21,6 +20,7 @@
 <script>
 export default {
   name: 'about',
+  props: ['navigationClass'],
   data() {
     return {
       links: [
@@ -42,6 +42,10 @@ export default {
         },
       ],
     };
+  },
+  created() {
+    this.navigationClass = 'nav--about';
+    this.$emit('navClassChanged', this.navigationClass);
   },
 };
 </script>

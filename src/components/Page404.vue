@@ -1,6 +1,5 @@
 <template>
   <div>
-    <navigation class="nav--404"></navigation>
     <div class="page-404">
       <div class="page-404--roman">
         CDIV
@@ -13,6 +12,11 @@
 <script>
 export default {
   name: 'Page404',
+  props: ['navigationClass'],
+  created() {
+    this.navigationClass = 'nav--404';
+    this.$emit('navClassChanged', this.navigationClass);
+  },
 };
 </script>
 
