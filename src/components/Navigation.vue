@@ -1,6 +1,6 @@
 <template>
   <header class="nav">
-    <router-link to="about" class="logo" active-class="active">
+    <router-link :to="{ name: 'About'}" class="logo" active-class="active">
       V<transition name="fade">
         <span class="full-logo">ladimir <br></span>
       </transition>G<transition name="fade"><span class="full-logo">orshunov</span></transition>
