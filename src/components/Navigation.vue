@@ -8,7 +8,7 @@
     </router-link>
     <ul class="list">
       <li class="item">
-        <router-link to="about" active-class="active" class="link">ABOUT</router-link>
+        <router-link :to="{ name: 'About'}" active-class="active" class="link">ABOUT</router-link>
       </li>
       <!--<li class="item">-->
         <!--<router-link to="blog" active-class="active" class="link">BLOG</router-link>-->
