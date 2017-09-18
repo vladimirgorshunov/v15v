@@ -4,7 +4,7 @@
       V<transition name="fade">
         <span class="full-logo">ladimir <br></span>
       </transition>G<transition name="fade"><span class="full-logo">orshunov</span></transition>
-      
+
     </router-link>
     <ul class="list">
       <li class="item">
@@ -30,7 +30,7 @@ export default {
 <style scoped>
   .nav {
     position: relative;
-    margin: 4.5rem;
+    margin: 4.5rem 4.5rem 1.5rem;
   }
   @media (max-width: 700px) {
     .nav {
@@ -50,7 +50,6 @@ export default {
     font-size: 4.5rem;
     text-decoration: none;
     color: #303030;
-    transition: font-size 1s ease-out;
   }
   .logo.active {
     cursor: default;
@@ -61,7 +60,7 @@ export default {
   @media (max-width: 600px) {
     .nav {
       margin-top: 2.25rem;
-      margin-bottom: 2.25rem;
+      margin-bottom: 0.75rem;
     }
     .logo {
       font-size: 3rem;
@@ -89,7 +88,7 @@ export default {
   .item:last-child {
     margin-right: 0;
   }
-  
+
   .link {
     text-decoration: none;
     color: #303030;
@@ -110,5 +109,75 @@ export default {
     right: 0;
     left: initial;
     transform: translate(0, -50%)
+  }
+
+
+  /* ----------- iPhone 5, 5S and SE in landscape mode----------- */
+
+  @media screen
+  and (min-width: 320px)
+  and (max-width: 568px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+
+  }
+
+  /* ----------- iPhone 6, 6s, 7 and 8 in landscape mode----------- */
+
+  @media screen
+  and (min-width: 569px)
+  and (max-width: 667px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .nav {
+      margin-top: 2.25rem;
+      margin-bottom: 2.25rem;
+    }
+    .logo {
+      font-size: 3rem;
+    }
+    .full-logo {
+      display: none;
+    }
+  }
+
+  /* ----------- iPhone X ----------- */
+
+  @media screen
+  and (min-width: 724px)
+  and (max-width: 812px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+
+    .nav {
+      margin-top: 2.25rem;
+      margin-bottom: 0;
+    }
+    .logo {
+      font-size: 3rem;
+    }
+    .full-logo {
+      display: none;
+    }
+  }
+
+  /* ----------- iPhone 6+, 6s+, 7+ and 8+ in landscape mode----------- */
+
+  @media screen
+  and (min-width: 414px)
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+
+    .nav {
+      margin-top: 2.25rem;
+      margin-bottom: 2.25rem;
+    }
+    .logo {
+      font-size: 3rem;
+    }
+    .full-logo {
+      display: none;
+    }
   }
 </style>

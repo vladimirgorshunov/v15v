@@ -109,4 +109,71 @@ export default {
       margin-top: 4rem;
     }
   }
+
+  /* ----------- iPhone 5, 5S and SE in landscape mode----------- */
+
+  @media screen
+    and (min-width: 320px)
+    and (max-width: 568px)
+    and (-webkit-min-device-pixel-ratio: 2)
+    and (orientation: landscape) {
+    .about {
+      padding-top: 0.5rem;
+    }
+    .contact-me {
+      margin-top: 2.25rem
+    }
+  }
+
+  /* ----------- iPhone 6, 6s, 7 and 8 in landscape mode----------- */
+
+  @media screen
+  and (min-width: 569px)
+  and (max-width: 667px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+    .about {
+      padding-top: 0.5rem;
+    }
+    .contact-me {
+      margin-top: 2.25rem
+    }
+  }
+
+  /* ----------- iPhone X ----------- */
+
+  @media screen
+  and (min-width: 724px)
+  and (max-width: 812px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+
+    .about {
+      padding-top: 0.5rem;
+    }
+    p {
+      font-size: 1.25rem;
+      width: 30rem;
+    }
+  }
+
+  /* ----------- iPhone 6+, 6s+, 7+ and 8+ in landscape mode----------- */
+
+  @media screen
+  and (min-width: 414px)
+  and (max-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3)
+  and (orientation: landscape) {
+    .about {
+      padding-top: 0.5rem;
+    }
+    .contact-me {
+      margin-top: 2.25rem
+    }
+    p {
+      font-size: 1.25rem;
+      width: 30rem;
+    }
+  }
+
 </style>
