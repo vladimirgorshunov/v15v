@@ -25,8 +25,8 @@ export default {
     return {
       links: [
         {
-          href: 'mailto:gorshunov.vladimir@gmail.com',
-          text: 'Mail',
+          href: 'https://github.com/vladimirgorshunov',
+          text: 'Github',
         },
         {
           href: 'https://t.me/gorshunov',
@@ -40,12 +40,15 @@ export default {
           href: 'skype:gorshunov777?action',
           text: 'Skype',
         },
+        {
+          href: 'mailto:gorshunov.vladimir@gmail.com',
+          text: 'Mail',
+        },
       ],
     };
   },
   created() {
-    this.navigationClass = 'nav--about';
-    this.$emit('navClassChanged', this.navigationClass);
+    this.$emit('navClassChanged', 'nav--about');
   },
 };
 </script>

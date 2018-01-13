@@ -14,8 +14,7 @@ export default {
   name: 'Page404',
   props: ['navigationClass'],
   created() {
-    this.navigationClass = 'nav--404';
-    this.$emit('navClassChanged', this.navigationClass);
+    this.$emit('navClassChanged', 'nav--404');
   },
 };
 </script>

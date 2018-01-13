@@ -16,8 +16,7 @@ export default {
     };
   },
   created() {
-    this.navigationClass = 'nav--blog';
-    this.$emit('navClassChanged', this.navigationClass);
+    this.$emit('navClassChanged', 'nav--blog');
   },
 };
 </script>
