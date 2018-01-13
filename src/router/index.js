@@ -1,22 +1,22 @@
-import Vue from 'vue';
-import Router from 'vue-router';
-import About from 'components/About';
-// import Blog from 'components/Blog';
-import Page404 from 'components/Page404';
+import Vue from 'vue'
+import Router from 'vue-router'
+import About from '../components/About'
+// import Blog from '../components/Blog'
+import Page404 from '../components/Page404'
 
-Vue.use(Router);
+Vue.use(Router)
 
 export default new Router({
   mode: 'history',
   routes: [
     {
       path: '/',
-      redirect: '/about',
+      redirect: '/about'
     },
     {
       path: '/about',
       name: 'About',
-      component: About,
+      component: About
     },
     // {
     //   path: '/blog',
@@ -27,11 +27,11 @@ export default new Router({
     {
       path: '/404',
       name: 'Page404',
-      component: Page404,
+      component: Page404
     },
     {
       path: '*',
-      redirect: '/404',
-    },
-  ],
-});
+      redirect: '/404'
+    }
+  ]
+})

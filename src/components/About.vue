@@ -21,36 +21,36 @@
 export default {
   name: 'about',
   props: ['navigationClass'],
-  data() {
+  data () {
     return {
       links: [
         {
           href: 'https://github.com/vladimirgorshunov',
-          text: 'Github',
+          text: 'Github'
         },
         {
           href: 'https://t.me/gorshunov',
-          text: 'Telegram',
+          text: 'Telegram'
         },
         {
           href: 'https://www.linkedin.com/in/gorshunovvladimir/',
-          text: 'LinkedIn',
+          text: 'LinkedIn'
         },
         {
           href: 'skype:gorshunov777?action',
-          text: 'Skype',
+          text: 'Skype'
         },
         {
           href: 'mailto:gorshunov.vladimir@gmail.com',
-          text: 'Mail',
-        },
-      ],
-    };
+          text: 'Mail'
+        }
+      ]
+    }
   },
-  created() {
-    this.$emit('navClassChanged', 'nav--about');
-  },
-};
+  created () {
+    this.$emit('navClassChanged', 'nav--about')
+  }
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -6,20 +6,17 @@
 </template>
 
 <script>
-  import Navigation from './components/Navigation';
-  
+  import Navigation from './components/Navigation'
+
   export default {
     name: 'app',
-    components: {
-      Navigation,
-    },
-    data() {
+    components: { Navigation },
+    data () {
       return {
-        navClass: '',
-      };
-    },
-  };
-
+        navClass: ''
+      }
+    }
+  }
 </script>
 
 <style>
@@ -29,7 +26,7 @@
     font-size: 16px;
   }
   #app {
-  
+
   }
-  
+
 </style>

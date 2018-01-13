@@ -1,39 +1,83 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
-    <link rel="icon" type="image/png" href="/static/favicon-32x32.png" sizes="32x32">
-    <link rel="icon" type="image/png" href="/static/favicon-16x16.png" sizes="16x16">
-    <link rel="manifest" href="/static/manifest.json">
-    <link rel="mask-icon" href="/static/safari-pinned-tab.svg" color="#303030">
-    <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville" rel="stylesheet">
-    <meta name="theme-color" content="#f7f9f9">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Vladimir Gorshunov</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="<%= htmlWebpackPlugin.files.publicPath %>static/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="<%= htmlWebpackPlugin.files.publicPath %>static/img/icons/favicon-16x16.png">
+    <!--[if IE]><link rel="shortcut icon" href="/static/img/icons/favicon.ico"><![endif]-->
+    <!-- Add to home screen for Android and modern mobile browsers -->
+    <link rel="manifest" href="<%= htmlWebpackPlugin.files.publicPath %>static/manifest.json">
+    <meta name="theme-color" content="#4DBA87">
+
+    <!-- Add to home screen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="v15v">
+    <link rel="apple-touch-icon" href="<%= htmlWebpackPlugin.files.publicPath %>static/img/icons/apple-touch-icon-152x152.png">
+    <link rel="mask-icon" href="<%= htmlWebpackPlugin.files.publicPath %>static/img/icons/safari-pinned-tab.svg" color="#4DBA87">
+    <!-- Add to home screen for Windows -->
+    <meta name="msapplication-TileImage" content="<%= htmlWebpackPlugin.files.publicPath %>static/img/icons/msapplication-icon-144x144.png">
+    <meta name="msapplication-TileColor" content="#000000">
+    <% for (var chunk of webpack.chunks) {
+        for (var file of chunk.files) {
+          if (file.match(/\.(js|css)$/)) { %>
+    <link rel="<%= chunk.initial?'preload':'prefetch' %>" href="<%= htmlWebpackPlugin.files.publicPath + file %>" as="<%= file.match(/\.css$/)?'style':'script' %>"><% }}} %>
     <script>
       if (window.localStorage && window.localStorage._tk_cache) {
-        document.documentElement.classList.add('wf-active');
-        const script = document.createElement('script');
-        script.innerHTML = '/*cached*/' + localStorage._tk_cache + ';Typekit.load({ async: false });';
-        document.head.appendChild(script);
+        document.documentElement.classList.add('wf-active')
+        const script = document.createElement('script')
+        script.innerHTML = '/*cached*/' + localStorage._tk_cache + ';Typekit.load({ async: false });'
+        document.head.appendChild(script)
       }
       window._tk_onload = function () {
-        const req = new XMLHttpRequest();
+        const req = new XMLHttpRequest()
         req.addEventListener('load', function () {
-          window.localStorage._tk_cache = this.responseText;
-        });
-        req.open('GET', 'https://use.typekit.net/pgp6fbu.js');
-        req.send();
-      };
-    </script>
-    <script
-        src="https://use.typekit.net/pgp6fbu.js"
-        onload="Typekit.load({ async: true, loading: window._tk_onload })">
+          window.localStorage._tk_cache = this.responseText
+        })
+        req.open('GET', 'https://use.typekit.net/pgp6fbu.js')
+        req.send()
+      }
     </script>
   </head>
   <body>
+    <noscript>
+      <div class="contact-me"><span class="contact-me__text">Contact me via:</span>
+        <ul class="contact-me__list">
+          <li class="contact-me__item">
+            <a href="https://github.com/vladimirgorshunov"
+               rel="noopener noreferrer" target="_blank"
+               class="contact-me__link">Github</a>
+          </li>
+          <li class="contact-me__item">
+            <a href="https://t.me/gorshunov"
+               rel="noopener noreferrer" target="_blank"
+               class="contact-me__link">Telegram</a>
+          </li>
+          <li class="contact-me__item">
+            <a href="https://www.linkedin.com/in/gorshunovvladimir/"
+               rel="noopener noreferrer" target="_blank"
+               class="contact-me__link">LinkedIn</a>
+          </li>
+          <li class="contact-me__item">
+            <a href="skype:gorshunov777?action"
+               rel="noopener noreferrer" target="_blank"
+               class="contact-me__link">Skype</a>
+          </li>
+          <li class="contact-me__item">
+            <a href="mailto:gorshunov.vladimir@gmail.com"
+               rel="noopener noreferrer" target="_blank"
+               class="contact-me__link">Mail</a>
+          </li>
+        </ul>
+      </div>
+    </noscript>
     <div id="app"></div>
+    <!-- Todo: only include in production -->
+    <%= htmlWebpackPlugin.options.serviceWorkerLoader %>
     <!-- built files will be auto injected -->
+    <script src="https://use.typekit.net/pgp6fbu.js" onload="Typekit.load({ async: true, loading: window._tk_onload })"></script>
   </body>
 </html>

@@ -10,15 +10,15 @@
 export default {
   name: 'blog',
   props: ['navigationClass'],
-  data() {
+  data () {
     return {
-      msg: 'blog works, for now',
-    };
+      msg: 'blog works, for now'
+    }
   },
-  created() {
-    this.$emit('navClassChanged', 'nav--blog');
-  },
-};
+  created () {
+    this.$emit('navClassChanged', 'nav--blog')
+  }
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

@@ -13,10 +13,10 @@
 export default {
   name: 'Page404',
   props: ['navigationClass'],
-  created() {
-    this.$emit('navClassChanged', 'nav--404');
-  },
-};
+  created () {
+    this.$emit('navClassChanged', 'nav--404')
+  }
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
