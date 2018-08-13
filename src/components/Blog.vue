@@ -1,5 +1,6 @@
 <template>
   <div>
+    <navigation class="nav--blog"></navigation>
     <div class="about">
       {{ msg }}
     </div>
@@ -7,18 +8,18 @@
 </template>
 
 <script>
-export default {
-  name: 'blog',
-  props: ['navigationClass'],
-  data () {
-    return {
-      msg: 'blog works, for now'
+  import Navigation from './Navigation'
+
+  export default {
+    name: 'blog',
+    props: [],
+    components: { navigation: Navigation },
+    data () {
+      return {
+        msg: 'blog works, for now'
+      }
     }
-  },
-  created () {
-    this.$emit('navClassChanged', 'nav--blog')
   }
-}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

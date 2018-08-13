@@ -1,20 +1,14 @@
 <template>
   <div id="app">
-    <navigation :class="[navClass]"></navigation>
-    <router-view :navigationClass="navClass" @navClassChanged="navClass = $event"></router-view>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-  import Navigation from './components/Navigation'
-
   export default {
     name: 'app',
-    components: { Navigation },
     data () {
-      return {
-        navClass: ''
-      }
+      return {}
     }
   }
 </script>
@@ -24,6 +18,9 @@
     margin: 0;
     padding: 0;
     font-size: 16px;
+  }
+  * {
+    box-sizing: border-box;
   }
   #app {
 

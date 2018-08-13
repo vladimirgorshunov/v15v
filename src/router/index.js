@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import About from '../components/About'
 // import Blog from '../components/Blog'
+import PingPong from '../components/PingPong'
 import Page404 from '../components/Page404'
 
 Vue.use(Router)
@@ -17,6 +18,11 @@ export default new Router({
       path: '/about',
       name: 'About',
       component: About
+    },
+    {
+      path: '/ping-pong',
+      name: 'PingPong',
+      component: PingPong
     },
     // {
     //   path: '/blog',
