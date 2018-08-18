@@ -3,9 +3,6 @@
     <label for="email">Email</label>
     <input id="email" name="email" type="text" v-model="user.email" required>
 
-    <label for="name">Full name</label>
-    <input id="name" name="name" type="text" v-model="user.name" required>
-
     <label for="password">Password</label>
     <input id="password" name="password" type="password" v-model="user.password" required>
     <button type="submit" :disabled="isLoading">
