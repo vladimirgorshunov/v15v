@@ -111,17 +111,6 @@ export default {
     transform: translate(0, -50%)
   }
 
-
-  /* ----------- iPhone 5, 5S and SE in landscape mode----------- */
-
-  @media screen
-  and (min-width: 320px)
-  and (max-width: 568px)
-  and (-webkit-min-device-pixel-ratio: 2)
-  and (orientation: landscape) {
-
-  }
-
   /* ----------- iPhone 6, 6s, 7 and 8 in landscape mode----------- */
 
   @media screen
