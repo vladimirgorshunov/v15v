@@ -1,3 +1,8 @@
+@import '@fontsource/pt-serif/400.css';
+@import '@fontsource/pt-serif/700.css';
+@import '@fontsource/arvo/400.css';
+@import '@fontsource/arvo/700.css';
+
 @font-face {
   font-family: 'Libre Baskerville';
   src: url('/static/fonts/LibreBaskerville-Regular.ttf') format('truetype');

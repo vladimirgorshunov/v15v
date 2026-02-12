@@ -1,0 +1,47 @@
+.toggle {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid var(--color-toggle-border);
+  border-radius: 9999px;
+  background: var(--color-toggle-background);
+  color: var(--color-toggle-text);
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0.45rem 0.8rem;
+  cursor: pointer;
+  box-shadow: 0 6px 20px var(--color-toggle-shadow);
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.toggle:hover {
+  background: var(--color-toggle-background-hover);
+}
+
+.toggle:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.icon {
+  font-size: 0.9rem;
+}
+
+.label {
+  letter-spacing: 0.2px;
+}
+
+@media (max-width: 600px) {
+  .toggle {
+    bottom: 0.75rem;
+    right: 0.75rem;
+    padding: 0.4rem 0.7rem;
+    font-size: 0.8rem;
+  }
+}
