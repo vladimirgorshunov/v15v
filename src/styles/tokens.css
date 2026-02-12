@@ -4,8 +4,26 @@
   --color-link: #575757;
   --color-focus: #1a73e8;
   --color-background: #ffffff;
+  --color-toggle-border: rgba(48, 48, 48, 0.24);
+  --color-toggle-background: rgba(255, 255, 255, 0.96);
+  --color-toggle-background-hover: #f2f2f2;
+  --color-toggle-text: #303030;
+  --color-toggle-shadow: rgba(48, 48, 48, 0.16);
 
   --font-serif: 'PT Serif', Georgia, serif;
   --font-logo: 'Arvo', Georgia, serif;
   --font-ui: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+:root[data-theme='dark'] {
+  --color-text: #ece3d3;
+  --color-muted: #b8ab94;
+  --color-link: #d9c5a4;
+  --color-focus: #c18d3e;
+  --color-background: #1b1712;
+  --color-toggle-border: rgba(217, 197, 164, 0.36);
+  --color-toggle-background: rgba(37, 31, 23, 0.94);
+  --color-toggle-background-hover: #3a3226;
+  --color-toggle-text: #ece3d3;
+  --color-toggle-shadow: rgba(8, 6, 4, 0.5);
 }
