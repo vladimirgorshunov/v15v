@@ -1,0 +1,11 @@
+:root {
+  --color-text: #303030;
+  --color-muted: #a2a2a2;
+  --color-link: #575757;
+  --color-focus: #1a73e8;
+  --color-background: #ffffff;
+
+  --font-serif: 'PT Serif', Georgia, serif;
+  --font-logo: 'Arvo', Georgia, serif;
+  --font-ui: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}

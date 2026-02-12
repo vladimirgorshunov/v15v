@@ -1,0 +1,125 @@
+.nav {
+  position: relative;
+  margin: 4.5rem 4.5rem 1.5rem;
+}
+
+.logo {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  color: var(--color-text);
+  text-decoration: none;
+  font-family: var(--font-logo);
+  font-size: 4.5rem;
+  font-weight: 400;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.logoActive {
+  cursor: default;
+}
+
+.fullLogo {
+  display: inline;
+}
+
+.list {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  transform: translateY(-50%);
+}
+
+.item {
+  display: inline-block;
+  margin-right: 2.25rem;
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.item:last-child {
+  margin-right: 0;
+}
+
+.link {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.linkActive {
+  color: var(--color-muted);
+  cursor: default;
+}
+
+@media (max-width: 700px) {
+  .nav {
+    margin-left: 2.25rem;
+    margin-right: 2.25rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .nav {
+    margin-top: 2.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .logo {
+    font-size: 3rem;
+  }
+
+  .fullLogo {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 569px) and (max-width: 667px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
+  .nav {
+    margin-top: 2.25rem;
+    margin-bottom: 2.25rem;
+  }
+
+  .logo {
+    font-size: 3rem;
+  }
+
+  .fullLogo {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 724px) and (max-width: 812px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: landscape) {
+  .nav {
+    margin-top: 2.25rem;
+    margin-bottom: 0;
+  }
+
+  .logo {
+    font-size: 3rem;
+  }
+
+  .fullLogo {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 414px) and (max-width: 736px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: landscape) {
+  .nav {
+    margin-top: 2.25rem;
+    margin-bottom: 2.25rem;
+  }
+
+  .logo {
+    font-size: 3rem;
+  }
+
+  .fullLogo {
+    display: none;
+  }
+}
