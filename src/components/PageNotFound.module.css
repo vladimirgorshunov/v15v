@@ -1,0 +1,37 @@
+.page404 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  min-height: calc(100vh - 180px);
+  padding: calc((100vh - 316px) / 6) 0;
+}
+
+.roman {
+  color: var(--color-muted);
+  font-family: 'Libre Baskerville', serif;
+  font-size: 9rem;
+}
+
+.subtitle {
+  color: var(--color-muted);
+  font-family: var(--font-serif);
+}
+
+@media (max-width: 700px) {
+  .page404 {
+    height: 100vh;
+    margin-top: -120px;
+    padding: 0;
+  }
+
+  .roman {
+    font-size: 6rem;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 700px) {
+  .page404 {
+    margin-top: -216px;
+  }
+}

@@ -1,0 +1,30 @@
+@font-face {
+  font-family: 'Libre Baskerville';
+  src: url('/static/fonts/LibreBaskerville-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Libre Baskerville';
+  src: url('/static/fonts/LibreBaskerville-Bold.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+html,
+body {
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-ui);
+}
+
+#app {
+  min-height: 100vh;
+}
