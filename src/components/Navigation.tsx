@@ -37,6 +37,15 @@ export function Navigation() {
               ABOUT
             </Link>
           </li>
+          <li className={styles.item}>
+            <Link
+              to="/blog"
+              className={styles.link}
+              activeProps={{ className: `${styles.link} ${styles.linkActive}` }}
+            >
+              BLOG
+            </Link>
+          </li>
         </ul>
       ) : null}
     </header>
