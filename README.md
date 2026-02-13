@@ -7,6 +7,8 @@ Personal website migrated to TanStack Start (React + TypeScript) with static pre
 - TanStack Start + TanStack Router
 - React 19 + TypeScript (strict)
 - Bun package manager
+- Sanity CMS (`@sanity/client`) for blog content
+- Portable Text rendering (`@portabletext/react`) with custom block mappings
 - ESLint + Prettier
 - Bun unit tests + Playwright e2e smoke tests
 
@@ -33,9 +35,21 @@ bun --bun run build
 
 - `/` redirects to `/about`
 - `/about` main page
+- `/blog` section root
 - `/404` dedicated error page
 - unknown routes redirect to `/404`
 - `/static/CV.pdf` direct asset URL
+
+## Blog CMS (Sanity)
+
+The blog reads published `post` documents from Sanity. If Sanity environment
+variables are not configured, `/blog` shows a safe setup message instead of
+failing the build.
+
+- Environment template: `/Users/vladimir.gorshunov@schibsted.com/projects/v15v/.env.example`
+- Setup details: `/Users/vladimir.gorshunov@schibsted.com/projects/v15v/docs/blog/sanity.md`
+- Portable Text custom component mapping:
+  `/Users/vladimir.gorshunov@schibsted.com/projects/v15v/src/components/blog/portableTextComponents.tsx`
 
 ## Migration Notes
 

@@ -1,0 +1,79 @@
+.link {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+.callout {
+  margin: 1.5rem 0;
+  border-left: 4px solid;
+  border-radius: 0.4rem;
+  padding: 0.9rem 1rem;
+}
+
+.calloutinfo {
+  border-left-color: #7c6f5c;
+  background: rgba(124, 111, 92, 0.14);
+}
+
+.calloutwarning {
+  border-left-color: #aa6f2f;
+  background: rgba(170, 111, 47, 0.16);
+}
+
+.calloutsuccess {
+  border-left-color: #6b8f4f;
+  background: rgba(107, 143, 79, 0.16);
+}
+
+.codeBlock {
+  margin: 1.5rem 0;
+  border-radius: 0.6rem;
+  padding: 0.8rem 1rem;
+  background: rgba(0, 0, 0, 0.08);
+  overflow-x: auto;
+}
+
+.codeLanguage {
+  margin-bottom: 0.4rem;
+  color: var(--color-muted);
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.codeBlock pre {
+  margin: 0;
+}
+
+.codeBlock code {
+  font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+.imageBlock {
+  margin: 1.5rem 0;
+}
+
+.imageBlock img {
+  width: 100%;
+  border-radius: 0.6rem;
+  display: block;
+}
+
+.imageCaption {
+  margin-top: 0.4rem;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.unsupportedBlock {
+  margin: 1rem 0;
+  border: 1px dashed var(--color-muted);
+  border-radius: 0.45rem;
+  padding: 0.7rem 0.8rem;
+  color: var(--color-muted);
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+}

@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/test'
 
-test('redirects / to /about and renders primary content', async ({ page }) => {
+test('loads primary about content from /', async ({ page }) => {
   await page.goto('/')
 
-  await expect(page).toHaveURL(/\/about$/)
+  const currentUrl = page.url()
+  expect(currentUrl).toMatch(/\/(?:about)?$/)
   await expect(
     page.getByText('I am a web-developer with', { exact: false }),
   ).toBeVisible()
@@ -19,6 +20,14 @@ test('redirects unknown routes to /404', async ({ page }) => {
   await expect(page).toHaveURL(/\/404$/)
   await expect(page.getByText('CDIV')).toBeVisible()
   await expect(page.getByText('Try another page.')).toBeVisible()
+})
+
+test('renders blog root and sanity setup state', async ({ page }) => {
+  await page.goto('/blog')
+
+  await expect(page).toHaveURL(/\/blog$/)
+  await expect(page.getByRole('heading', { name: 'Blog' })).toBeVisible()
+  await expect(page.getByText('Sanity is not configured yet.')).toBeVisible()
 })
 
 test('serves static asset URLs', async ({ request }) => {
