@@ -7,6 +7,40 @@ import globalCss from '@/styles/global.css?url'
 import resetCss from '@/styles/reset.css?url'
 import tokensCss from '@/styles/tokens.css?url'
 
+const RootDocument = ({ children }: { children: React.ReactNode }) => {
+  const themeScript = `(() => {
+  try {
+    const key = 'v15v-theme';
+    const stored = window.localStorage.getItem(key);
+    const theme = stored === 'light' || stored === 'dark'
+      ? stored
+      : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeColorMeta) {
+      themeColorMeta.setAttribute('content', theme === 'dark' ? '#1b1712' : '#4DBA87');
+    }
+  } catch (e) {}
+})();`
+
+  return (
+    <html data-theme="light" lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <HeadContent />
+      </head>
+      <body>
+        <div id="app">
+          <ThemeToggle />
+          <Navigation />
+          {children}
+        </div>
+        <Scripts />
+      </body>
+    </html>
+  )
+}
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -95,37 +129,3 @@ export const Route = createRootRoute({
   }),
   shellComponent: RootDocument,
 })
-
-function RootDocument({ children }: { children: React.ReactNode }) {
-  const themeScript = `(function () {
-  try {
-    const key = 'v15v-theme';
-    const stored = window.localStorage.getItem(key);
-    const theme = stored === 'light' || stored === 'dark'
-      ? stored
-      : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    document.documentElement.setAttribute('data-theme', theme);
-    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-    if (themeColorMeta) {
-      themeColorMeta.setAttribute('content', theme === 'dark' ? '#1b1712' : '#4DBA87');
-    }
-  } catch (e) {}
-})();`
-
-  return (
-    <html data-theme="light" lang="en" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        <HeadContent />
-      </head>
-      <body>
-        <div id="app">
-          <ThemeToggle />
-          <Navigation />
-          {children}
-        </div>
-        <Scripts />
-      </body>
-    </html>
-  )
-}

@@ -2,11 +2,7 @@ import { Outlet, createFileRoute } from '@tanstack/react-router'
 
 import styles from '@/components/blog/blogRoutes.module.css'
 
-export const Route = createFileRoute('/blog')({
-  component: BlogRootRoute,
-})
-
-function BlogRootRoute() {
+const BlogRootRoute = () => {
   return (
     <main className={styles.blogRoot}>
       <h1 className={styles.blogTitle}>Blog</h1>
@@ -15,3 +11,7 @@ function BlogRootRoute() {
     </main>
   )
 }
+
+export const Route = createFileRoute('/blog')({
+  component: BlogRootRoute,
+})

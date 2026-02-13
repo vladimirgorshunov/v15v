@@ -50,7 +50,7 @@ const POST_BY_SLUG_QUERY = `*[_type == "post" && slug.current == $slug][0] {
   }
 }`
 
-export async function getBlogPosts(): Promise<Array<BlogPostListItem>> {
+export const getBlogPosts = async (): Promise<Array<BlogPostListItem>> => {
   if (!isSanityConfigured || !sanityClient) {
     return []
   }
@@ -62,9 +62,9 @@ export async function getBlogPosts(): Promise<Array<BlogPostListItem>> {
   }
 }
 
-export async function getBlogPostBySlug(
+export const getBlogPostBySlug = async (
   slug: string,
-): Promise<BlogPost | null> {
+): Promise<BlogPost | null> => {
   if (!isSanityConfigured || !sanityClient) {
     return null
   }
@@ -76,7 +76,7 @@ export async function getBlogPostBySlug(
   }
 }
 
-export function formatPostDate(date?: string): string {
+export const formatPostDate = (date?: string): string => {
   if (!date) {
     return ''
   }
