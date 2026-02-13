@@ -56,5 +56,7 @@ failing the build.
 - Legacy Typekit runtime/caching script was removed.
 - Fonts are self-hosted from `/public/static/fonts`.
 - Manifest and icon assets are retained under `/public/static`.
+- AWS static deployment runbook:
+  `/Users/vladimir.gorshunov@schibsted.com/projects/v15v/docs/deployment/aws-static.md`
 
 See `/docs/migration/parity-checklist.md` and `/docs/migration/cutover.md` for details.
