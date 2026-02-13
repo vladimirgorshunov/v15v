@@ -1,6 +1,6 @@
 import styles from './PageNotFound.module.css'
 
-export function PageNotFound() {
+export const PageNotFound = () => {
   return (
     <div className={styles.page404}>
       <div className={styles.roman}>CDIV</div>

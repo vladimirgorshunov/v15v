@@ -5,19 +5,7 @@ import styles from '@/components/blog/blogRoutes.module.css'
 import { portableTextComponents } from '@/components/blog/portableTextComponents'
 import { formatPostDate, getBlogPostBySlug } from '@/lib/blog'
 
-export const Route = createFileRoute('/blog/$slug')({
-  loader: async ({ params }) => {
-    const post = await getBlogPostBySlug(params.slug)
-    if (!post) {
-      throw redirect({ to: '/404' })
-    }
-
-    return { post }
-  },
-  component: BlogPostRoute,
-})
-
-function BlogPostRoute() {
+const BlogPostRoute = () => {
   const { post } = Route.useLoaderData()
   const metaParts = [formatPostDate(post.publishedAt), post.authorName].filter(Boolean)
 
@@ -31,3 +19,15 @@ function BlogPostRoute() {
     </article>
   )
 }
+
+export const Route = createFileRoute('/blog/$slug')({
+  loader: async ({ params }) => {
+    const post = await getBlogPostBySlug(params.slug)
+    if (!post) {
+      throw redirect({ to: '/404' })
+    }
+
+    return { post }
+  },
+  component: BlogPostRoute,
+})

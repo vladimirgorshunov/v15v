@@ -22,18 +22,17 @@ const OPPOSITE_THEME: Record<Theme, Theme> = {
   dark: 'light',
 }
 
-function isTheme(value: string | null): value is Theme {
-  return value === 'light' || value === 'dark'
-}
+const isTheme = (value: string | null): value is Theme =>
+  value === 'light' || value === 'dark'
 
-function applyTheme(theme: Theme) {
+const applyTheme = (theme: Theme): void => {
   document.documentElement.setAttribute('data-theme', theme)
 
   const themeColorMeta = document.querySelector('meta[name="theme-color"]')
   themeColorMeta?.setAttribute('content', THEME_META_COLOR[theme])
 }
 
-function readInitialTheme(): Theme {
+const readInitialTheme = (): Theme => {
   const stored = window.localStorage.getItem(STORAGE_KEY)
   if (isTheme(stored)) {
     return stored
@@ -44,7 +43,7 @@ function readInitialTheme(): Theme {
     : 'light'
 }
 
-export function ThemeToggle() {
+export const ThemeToggle = () => {
   const [theme, setTheme] = useState<Theme>('light')
 
   useEffect(() => {
@@ -53,7 +52,7 @@ export function ThemeToggle() {
     applyTheme(nextTheme)
   }, [])
 
-  function onToggle() {
+  const onToggle = () => {
     const nextTheme = OPPOSITE_THEME[theme]
     setTheme(nextTheme)
     window.localStorage.setItem(STORAGE_KEY, nextTheme)

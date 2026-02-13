@@ -2,7 +2,7 @@ import { Link, useRouterState } from '@tanstack/react-router'
 
 import styles from './Navigation.module.css'
 
-export function Navigation() {
+export const Navigation = () => {
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   })

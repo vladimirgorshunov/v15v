@@ -4,15 +4,7 @@ import styles from '@/components/blog/blogRoutes.module.css'
 import { formatPostDate, getBlogPosts } from '@/lib/blog'
 import { isSanityConfigured } from '@/lib/sanity'
 
-export const Route = createFileRoute('/blog/')({
-  loader: async () => {
-    const posts = await getBlogPosts()
-    return { posts }
-  },
-  component: BlogIndexRoute,
-})
-
-function BlogIndexRoute() {
+const BlogIndexRoute = () => {
   const { posts } = Route.useLoaderData()
 
   if (!isSanityConfigured) {
@@ -50,3 +42,11 @@ function BlogIndexRoute() {
     </ul>
   )
 }
+
+export const Route = createFileRoute('/blog/')({
+  loader: async () => {
+    const posts = await getBlogPosts()
+    return { posts }
+  },
+  component: BlogIndexRoute,
+})

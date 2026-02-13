@@ -2,7 +2,7 @@ import styles from './AboutContent.module.css'
 import { ABOUT_INTRO_TEMPLATE, CONTACT_LINKS, CV_URL } from '@/content/siteContent'
 import { calculateYearsOfExperience } from '@/lib/experience'
 
-export function AboutContent() {
+export const AboutContent = () => {
   const yearsOfExperience = calculateYearsOfExperience()
 
   return (
