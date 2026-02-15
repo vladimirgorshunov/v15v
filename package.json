@@ -7,6 +7,8 @@
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1 --port 4173",
     "typecheck": "tsc --noEmit",
+    "typecheck:studio": "bun run --cwd sanity typecheck",
+    "typecheck:all": "bun run typecheck && bun run typecheck:studio",
     "lint": "eslint src tests vite.config.ts playwright.config.ts",
     "format": "prettier --write .",
     "test": "bun run test:unit && bun run test:e2e",
