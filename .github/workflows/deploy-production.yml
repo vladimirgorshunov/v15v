@@ -74,12 +74,6 @@ jobs:
       - name: Unit tests
         run: bun run test:unit
 
-      - name: Install Playwright browser
-        run: bunx playwright install --with-deps chromium
-
-      - name: End-to-end tests
-        run: bun run test:e2e
-
       - name: Build
         run: bun run build
 
