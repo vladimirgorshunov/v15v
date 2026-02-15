@@ -12,6 +12,11 @@ export default defineConfig({
   },
   webServer: {
     command: 'bun --bun run build && bun --bun run preview',
+    env: {
+      ...process.env,
+      VITE_SANITY_PROJECT_ID: '',
+      VITE_SANITY_DATASET: '',
+    },
     url: 'http://127.0.0.1:4173',
     timeout: 180000,
     reuseExistingServer: !process.env.CI,
