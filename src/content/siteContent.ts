@@ -22,10 +22,6 @@ export const CONTACT_LINKS: Array<ContactLink> = [
     text: 'LinkedIn',
   },
   {
-    href: 'skype:gorshunov777?action',
-    text: 'Skype',
-  },
-  {
     href: 'mailto:gorshunov.vladimir@gmail.com',
     text: 'Mail',
   },

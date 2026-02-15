@@ -8,13 +8,12 @@ describe('site content', () => {
   })
 
   test('contains all expected contact links', () => {
-    expect(CONTACT_LINKS).toHaveLength(5)
+    expect(CONTACT_LINKS).toHaveLength(4)
 
     expect(CONTACT_LINKS.map((link) => link.text)).toEqual([
       'Github',
       'Telegram',
       'LinkedIn',
-      'Skype',
       'Mail',
     ])
   })
