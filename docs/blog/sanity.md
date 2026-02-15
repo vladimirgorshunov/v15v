@@ -2,7 +2,17 @@
 
 ## Environment
 
-Copy `.env.example` to `.env` and set:
+Vite loads environment variables from `/Users/vladimir.gorshunov@schibsted.com/projects/v15v/.env`.
+
+Set the Sanity variables in:
+
+- `/Users/vladimir.gorshunov@schibsted.com/projects/v15v/.env/.env` (default)
+- `/Users/vladimir.gorshunov@schibsted.com/projects/v15v/.env/.env.development` (dev override)
+- `/Users/vladimir.gorshunov@schibsted.com/projects/v15v/.env/.env.production` (production override)
+
+Template values are available in `/Users/vladimir.gorshunov@schibsted.com/projects/v15v/.env.example`.
+
+Required variables:
 
 - `VITE_SANITY_PROJECT_ID`
 - `VITE_SANITY_DATASET`
