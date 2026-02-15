@@ -24,6 +24,7 @@ const config = defineConfig({
         autoSubfolderIndex: true,
         autoStaticPathsDiscovery: true,
         crawlLinks: true,
+        filter: (page) => !page.path.startsWith('/static/'),
         failOnError: true,
       },
     }),
