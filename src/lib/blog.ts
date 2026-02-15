@@ -70,7 +70,9 @@ export const getBlogPostBySlug = async (
   }
 
   try {
-    return await sanityClient.fetch<BlogPost | null>(POST_BY_SLUG_QUERY, { slug })
+    return await sanityClient.fetch<BlogPost | null>(POST_BY_SLUG_QUERY, {
+      slug,
+    })
   } catch {
     return null
   }

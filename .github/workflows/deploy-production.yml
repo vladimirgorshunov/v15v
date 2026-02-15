@@ -12,7 +12,7 @@ on:
         description: Commit SHA, tag, or branch to deploy (optional)
         required: false
         type: string
-        default: ""
+        default: ''
 
 concurrency:
   group: production-deploy

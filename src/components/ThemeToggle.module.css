@@ -17,7 +17,10 @@
   padding: 0.45rem 0.8rem;
   cursor: pointer;
   box-shadow: 0 6px 20px var(--color-toggle-shadow);
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .toggle:hover {
