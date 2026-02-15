@@ -7,6 +7,7 @@ import viteTsConfigPaths from 'vite-tsconfig-paths'
 import { nitro } from 'nitro/vite'
 
 const config = defineConfig({
+  envDir: '.env',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

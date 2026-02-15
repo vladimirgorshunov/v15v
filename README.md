@@ -46,6 +46,7 @@ The blog reads published `post` documents from Sanity. If Sanity environment
 variables are not configured, `/blog` shows a safe setup message instead of
 failing the build.
 
+- Environment files: `/Users/vladimir.gorshunov@schibsted.com/projects/v15v/.env/.env*`
 - Environment template: `/Users/vladimir.gorshunov@schibsted.com/projects/v15v/.env.example`
 - Setup details: `/Users/vladimir.gorshunov@schibsted.com/projects/v15v/docs/blog/sanity.md`
 - Portable Text custom component mapping:
