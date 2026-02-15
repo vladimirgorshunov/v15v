@@ -25,7 +25,10 @@ const config = defineConfig({
         autoSubfolderIndex: true,
         autoStaticPathsDiscovery: true,
         crawlLinks: true,
-        filter: (page) => !page.path.startsWith('/static/'),
+        // Blog data comes from Sanity at runtime; skip blog prerender to avoid
+        // build-time Sanity client crashes in CI and always emit static index.html.
+        filter: (page) =>
+          !page.path.startsWith('/static/') && !page.path.startsWith('/blog'),
         failOnError: true,
       },
     }),
