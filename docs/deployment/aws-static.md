@@ -130,10 +130,13 @@ Configure these repository or environment variables:
 - `AWS_REGION`
 - `S3_BUCKET`
 - `CLOUDFRONT_DISTRIBUTION_ID`
-- `VITE_SANITY_PROJECT_ID` (optional)
-- `VITE_SANITY_DATASET` (optional)
+- `VITE_SANITY_PROJECT_ID` (required for production deploy)
+- `VITE_SANITY_DATASET` (required for production deploy)
 - `VITE_SANITY_API_VERSION` (optional)
 - `VITE_SANITY_USE_CDN` (optional)
+
+`Deploy Production` binds both `verify` and `deploy` jobs to the `production`
+environment. The build in `verify` reads `VITE_SANITY_*` from that environment.
 
 ### 4.3 Secrets
 
@@ -159,6 +162,10 @@ Behavior:
 
 - Trigger on merged PRs to `master` (`pull_request` + `types: [closed]`).
 - Allow manual redeploy via `workflow_dispatch` with optional input `ref`.
+- Run `verify` in the `production` environment so build-time `VITE_SANITY_*`
+  variables resolve consistently with deploy.
+- Fail fast in `verify` when `VITE_SANITY_PROJECT_ID` or
+  `VITE_SANITY_DATASET` is missing.
 - Re-run `lint`, `typecheck`, `unit`, and `build` on the merge commit.
 - Upload `.output/public` artifact from verify job.
 - Deploy artifact to S3 with `aws s3 sync --delete`.
