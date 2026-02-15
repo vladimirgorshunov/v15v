@@ -60,7 +60,7 @@ export const Route = createRootRoute({
       },
       {
         name: 'theme-color',
-        content: '#4DBA87',
+        content: '#FFFFFF',
       },
       {
         name: 'apple-mobile-web-app-capable',
@@ -123,7 +123,7 @@ export const Route = createRootRoute({
       {
         rel: 'mask-icon',
         href: '/static/img/icons/safari-pinned-tab.svg',
-        color: '#4DBA87',
+        color: '#FFFFFF',
       },
     ],
   }),
