@@ -159,7 +159,7 @@ Behavior:
 
 - Trigger on merged PRs to `master` (`pull_request` + `types: [closed]`).
 - Allow manual redeploy via `workflow_dispatch` with optional input `ref`.
-- Re-run `lint`, `typecheck`, `unit`, `e2e`, and `build` on the merge commit.
+- Re-run `lint`, `typecheck`, `unit`, and `build` on the merge commit.
 - Upload `.output/public` artifact from verify job.
 - Deploy artifact to S3 with `aws s3 sync --delete`.
 - Invalidate CloudFront paths `/*` and wait for completion.
