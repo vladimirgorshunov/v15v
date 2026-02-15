@@ -7,6 +7,7 @@
     "prettier.config.js",
     "vite.config.ts"
   ],
+  "exclude": ["sanity"],
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",

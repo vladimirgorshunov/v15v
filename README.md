@@ -26,6 +26,7 @@ The dev server runs on [http://localhost:3000](http://localhost:3000).
 ```bash
 bun --bun run lint
 bun --bun run typecheck
+bun --bun run typecheck:all
 bun --bun run test:unit
 bun --bun run test:e2e
 bun --bun run build
