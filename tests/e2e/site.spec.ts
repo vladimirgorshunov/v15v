@@ -3,8 +3,7 @@ import { expect, test } from '@playwright/test'
 test('loads primary about content from /', async ({ page }) => {
   await page.goto('/')
 
-  const currentUrl = page.url()
-  expect(currentUrl).toMatch(/\/(?:about)?$/)
+  await expect(page).toHaveURL(/\/$/)
   await expect(
     page.getByText('I am a web-developer with', { exact: false }),
   ).toBeVisible()
@@ -12,6 +11,15 @@ test('loads primary about content from /', async ({ page }) => {
     'href',
     '/static/CV.pdf',
   )
+})
+
+test('redirects /about alias to /', async ({ page }) => {
+  await page.goto('/about')
+
+  await expect(page).toHaveURL(/\/$/)
+  await expect(
+    page.getByText('I am a web-developer with', { exact: false }),
+  ).toBeVisible()
 })
 
 test('redirects unknown routes to /404', async ({ page }) => {

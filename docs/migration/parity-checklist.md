@@ -2,8 +2,8 @@
 
 ## Routes and URL Behavior
 
-- [x] `/` redirects to `/about`.
-- [x] `/about` is the primary page.
+- [x] `/` is the primary page.
+- [x] `/about` redirects to `/` as an alias.
 - [x] `/404` exists and is addressable directly.
 - [x] Unknown routes redirect to `/404`.
 

@@ -1,9 +1,15 @@
-import { Navigate, createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 
-const RootRedirectRoute = () => {
-  return <Navigate replace to="/about" />
+import { AboutContent } from '@/components/AboutContent'
+
+const HomeRoute = () => {
+  return (
+    <main>
+      <AboutContent />
+    </main>
+  )
 }
 
 export const Route = createFileRoute('/')({
-  component: RootRedirectRoute,
+  component: HomeRoute,
 })

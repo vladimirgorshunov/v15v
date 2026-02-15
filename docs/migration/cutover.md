@@ -12,7 +12,8 @@
 ## 2. Validation Checklist
 
 1. Route parity:
-   - `/` redirects to `/about`
+   - `/` is the primary page
+   - `/about` redirects to `/` (alias)
    - unknown URLs land on `/404`
 2. Content parity:
    - about text and links are visible

@@ -33,8 +33,8 @@ bun --bun run build
 
 ## URL Contracts Preserved
 
-- `/` redirects to `/about`
-- `/about` main page
+- `/` main page
+- `/about` redirects to `/` (alias)
 - `/blog` section root
 - `/404` dedicated error page
 - unknown routes redirect to `/404`

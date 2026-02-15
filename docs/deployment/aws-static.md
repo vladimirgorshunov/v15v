@@ -178,7 +178,8 @@ Recommended rollback flow:
 2. Run workflow manually with that `ref`.
 3. Wait for workflow success and CloudFront invalidation completion.
 4. Validate:
-   - `/about`
+   - `/`
+   - `/about` (redirects to `/`)
    - `/blog`
    - `/static/CV.pdf`
    - unknown route redirects to `/404`
