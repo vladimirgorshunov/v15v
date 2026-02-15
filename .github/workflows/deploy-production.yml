@@ -30,6 +30,7 @@ jobs:
         (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
       }}
     runs-on: ubuntu-latest
+    environment: production
     env:
       VITE_SANITY_PROJECT_ID: ${{ vars.VITE_SANITY_PROJECT_ID }}
       VITE_SANITY_DATASET: ${{ vars.VITE_SANITY_DATASET }}
@@ -73,6 +74,11 @@ jobs:
 
       - name: Unit tests
         run: bun run test:unit
+
+      - name: Validate Sanity build configuration
+        run: |
+          test -n "$VITE_SANITY_PROJECT_ID" || (echo "Missing variable: VITE_SANITY_PROJECT_ID" && exit 1)
+          test -n "$VITE_SANITY_DATASET" || (echo "Missing variable: VITE_SANITY_DATASET" && exit 1)
 
       - name: Build
         run: bun run build
