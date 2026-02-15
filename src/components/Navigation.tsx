@@ -12,7 +12,7 @@ export const Navigation = () => {
   return (
     <header className={styles.nav}>
       <Link
-        to="/about"
+        to="/"
         className={styles.logo}
         activeProps={{ className: `${styles.logo} ${styles.logoActive}` }}
       >
@@ -30,7 +30,7 @@ export const Navigation = () => {
         <ul className={styles.list}>
           <li className={styles.item}>
             <Link
-              to="/about"
+              to="/"
               className={styles.link}
               activeProps={{ className: `${styles.link} ${styles.linkActive}` }}
             >
