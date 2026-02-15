@@ -7,14 +7,21 @@ import { formatPostDate, getBlogPostBySlug } from '@/lib/blog'
 
 const BlogPostRoute = () => {
   const { post } = Route.useLoaderData()
-  const metaParts = [formatPostDate(post.publishedAt), post.authorName].filter(Boolean)
+  const metaParts = [formatPostDate(post.publishedAt), post.authorName].filter(
+    Boolean,
+  )
 
   return (
     <article className={styles.article}>
       <h1 className={styles.articleTitle}>{post.title}</h1>
-      {metaParts.length ? <p className={styles.articleMeta}>{metaParts.join(' · ')}</p> : null}
+      {metaParts.length ? (
+        <p className={styles.articleMeta}>{metaParts.join(' · ')}</p>
+      ) : null}
       <div className={styles.articleBody}>
-        <PortableText components={portableTextComponents} value={post.content} />
+        <PortableText
+          components={portableTextComponents}
+          value={post.content}
+        />
       </div>
     </article>
   )

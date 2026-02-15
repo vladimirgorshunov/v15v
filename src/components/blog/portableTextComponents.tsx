@@ -83,7 +83,9 @@ export const portableTextComponents: PortableTextComponents = {
   },
   unknownType: ({ value }) => {
     const typeName =
-      typeof value === 'object' && '_type' in value ? String(value._type) : 'unknown'
+      typeof value === 'object' && '_type' in value
+        ? String(value._type)
+        : 'unknown'
 
     return (
       <div className={styles.unsupportedBlock}>
