@@ -1,5 +1,16 @@
 import { expect, test } from '@playwright/test'
 
+test.beforeEach(({ page }) => {
+  page.on('pageerror', (error) => {
+    throw error
+  })
+  page.on('console', (message) => {
+    if (message.type() === 'error') {
+      expect(message.text()).not.toMatch(/hydrat|Minified React error/i)
+    }
+  })
+})
+
 test('loads primary about content from /', async ({ page }) => {
   await page.goto('/')
 
@@ -36,6 +47,28 @@ test('renders blog root and sanity setup state', async ({ page }) => {
   await expect(page).toHaveURL(/\/blog$/)
   await expect(page.getByRole('heading', { name: 'Blog' })).toBeVisible()
   await expect(page.getByText('Sanity is not configured yet.')).toBeVisible()
+})
+
+test('redirects missing blog posts to /404', async ({ page }) => {
+  await page.goto('/blog/missing-post')
+
+  await expect(page).toHaveURL(/\/404$/)
+  await expect(page.getByText('Try another page.')).toBeVisible()
+})
+
+test('preserves the selected theme after a fresh page load', async ({
+  page,
+}) => {
+  await page.emulateMedia({ colorScheme: 'light' })
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Switch to dark theme' }).click()
+
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+  await page.reload()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+  await expect(
+    page.getByRole('button', { name: 'Switch to light theme' }),
+  ).toBeVisible()
 })
 
 test('serves static asset URLs', async ({ request }) => {
