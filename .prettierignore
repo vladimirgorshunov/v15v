@@ -1,3 +1,10 @@
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+src/routeTree.gen.ts
+bun.lock
+sanity/
+.output/
+.tanstack/
+test-results/
+playwright-report/

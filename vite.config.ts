@@ -15,7 +15,6 @@ const config = defineConfig({
   },
   plugins: [
     devtools(),
-    nitro(),
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],
     }),
@@ -32,6 +31,7 @@ const config = defineConfig({
         failOnError: true,
       },
     }),
+    nitro(),
     viteReact(),
   ],
 })
