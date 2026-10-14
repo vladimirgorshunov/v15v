@@ -14,12 +14,20 @@ Personal website migrated to TanStack Start (React + TypeScript) with static pre
 
 ## Development
 
+Use Bun 1.4.3 or newer and Node 24.15.0 or newer. CI pins Bun 1.4.3
+and Node 24.21.0; Node typings follow the 24.x runtime.
+
 ```bash
 bun install
 bun --bun run dev
 ```
 
-The dev server runs on [http://localhost:3000](http://localhost:3000).
+The dev server runs on [http://localhost:4040](http://localhost:4040).
+
+`bun run typecheck` uses the native TypeScript 7 compiler. The `typescript`
+dependency aliases the TypeScript 6 compatibility package for ESLint and other
+tools that still require the compiler API; `@typescript/native` supplies `tsc`.
+See [the package upgrade notes](docs/migration/package-upgrade-2026-10.md).
 
 ## Quality Gates
 
