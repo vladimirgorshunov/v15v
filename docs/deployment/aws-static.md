@@ -115,6 +115,14 @@ The static-only browser test server executes the same navigation function source
 Navigation links inside the shared shell render after hydration because their
 active state depends on the requested URL.
 
+CloudFront JavaScript runtime 2.0 is not Node.js: it supports ES5 iteration but
+not `for...of`. Keep the edge source within the
+[documented runtime features](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/functions-javascript-runtime-20.html).
+Before promotion, test the DEVELOPMENT function in CloudFront with
+`cloudfront:TestFunction` permission scoped to this function. Local VM/browser
+tests do not establish platform syntax compatibility. After publishing, verify
+live home, alias redirect, blog navigation, and missing-asset responses.
+
 Remove global `403`/`404` custom error responses that return `/index.html` with
 status `200`. Private S3 may return `403` for a missing object; preserve the
 non-success status for missing assets instead of replacing it with HTML. The
