@@ -1,6 +1,6 @@
 # v15v
 
-Personal website migrated to TanStack Start (React + TypeScript) with static prerendering.
+Personal website built with TanStack Start (React + TypeScript), server-rendered by AWS Lambda behind CloudFront.
 
 ## Stack
 
@@ -37,9 +37,13 @@ bun lint
 bun --bun run typecheck
 bun --bun run typecheck:all
 bun --bun run test:unit
-bun --bun run test:e2e
-bun --bun run build
+bun run test:e2e
+bun run build
 ```
+
+Build with Node via `bun run build`, not `bun --bun run build`. Nitro detects
+host-runtime built-ins: forcing Bun treats `undici` as built-in and omits it
+from the Node Lambda bundle.
 
 Native lint uses type-aware TanStack rules, with `unicorn/prefer-node-protocol`
 replacing the Node rule. The unsupported spaced-comment rule is omitted;
@@ -63,8 +67,8 @@ browser dependency support.
 - `/` main page
 - `/about` redirects to `/` (alias)
 - `/blog` section root
-- `/404` dedicated error page
-- unknown routes redirect to `/404`
+- `/404` dedicated error page with HTTP 404
+- unknown routes and missing posts redirect (307) to `/404`
 - `/static/CV.pdf` direct asset URL
 
 ## Blog CMS (Sanity)
@@ -72,6 +76,8 @@ browser dependency support.
 The blog reads published `post` documents from Sanity. If Sanity environment
 variables are not configured, `/blog` shows a safe setup message instead of
 failing the build.
+The Sanity `body` field maps to `BlogPost.content`; publication dates use UTC
+on both server and client to avoid hydration differences.
 
 - Environment files: `/Users/vladimir.gorshunov@schibsted.com/projects/v15v/.env/.env*`
 - Environment template: `/Users/vladimir.gorshunov@schibsted.com/projects/v15v/.env.example`
@@ -84,7 +90,6 @@ failing the build.
 - Legacy Typekit runtime/caching script was removed.
 - Fonts are self-hosted from `/public/static/fonts`.
 - Manifest and icon assets are retained under `/public/static`.
-- AWS static deployment runbook:
-  `/Users/vladimir.gorshunov@schibsted.com/projects/v15v/docs/deployment/aws-static.md`
+- [AWS SSR deployment runbook](docs/deployment/aws-static.md)
 
 See `/docs/migration/parity-checklist.md` and `/docs/migration/cutover.md` for details.

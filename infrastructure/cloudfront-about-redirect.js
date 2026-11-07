@@ -22,18 +22,5 @@ function handler(event) {
     }
   }
 
-  if (uri === '/') {
-    request.uri = '/index.html'
-  } else if (uri === '/404' || uri === '/404/') {
-    request.uri = '/404/index.html'
-  } else {
-    const asset = /^\/(?:assets|_build|static)(?:\/|$)/.test(uri)
-    const blog = uri === '/blog' || uri.indexOf('/blog/') === 0
-    const fileName = uri.substring(uri.lastIndexOf('/') + 1)
-    if (!asset && (blog || fileName.indexOf('.') === -1)) {
-      request.uri = '/_shell.html'
-    }
-  }
-
   return request
 }

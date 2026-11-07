@@ -110,5 +110,16 @@ describe('Sanity blog reads', () => {
     expect(formatPostDate()).toBe('')
     expect(formatPostDate('not-a-date')).toBe('')
     expect(formatPostDate('2026-10-14T12:00:00Z')).toBe('October 14, 2026')
+    const previousTimezone = process.env.TZ
+    try {
+      process.env.TZ = 'Pacific/Kiritimati'
+      expect(formatPostDate('2026-03-01T23:30:00Z')).toBe('March 1, 2026')
+    } finally {
+      if (previousTimezone === undefined) {
+        delete process.env.TZ
+      } else {
+        process.env.TZ = previousTimezone
+      }
+    }
   })
 })

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite dev --port 4040",
     "build": "vite build",
-    "preview": "vite preview --host 127.0.0.1 --port 4173",
+    "preview": "bun tests/e2e/edge-server.ts",
     "typecheck": "tsc --noEmit",
     "typecheck:studio": "bun run --cwd sanity typecheck",
     "typecheck:all": "bun run typecheck && bun run typecheck:studio",
@@ -38,6 +38,7 @@
     "@vitejs/plugin-react": "6.2.1",
     "bun-types": "1.4.4",
     "jsdom": "30.1.3",
+    "srvx": "1.0.8",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "vite": "8.3.6"
   },

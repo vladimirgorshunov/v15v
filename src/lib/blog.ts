@@ -49,7 +49,7 @@ const POST_BY_SLUG_QUERY = `*[_type == "post" && slug.current == $slug][0] {
   publishedAt,
   "authorName": author->name,
   "slug": slug.current,
-  content[] {
+  "content": body[] {
     ...,
     _type == "image" => {
       ...,
@@ -98,5 +98,6 @@ export const formatPostDate = (date?: string): string => {
 
   return new Intl.DateTimeFormat('en-US', {
     dateStyle: 'long',
+    timeZone: 'UTC',
   }).format(parsed)
 }

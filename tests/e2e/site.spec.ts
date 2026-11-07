@@ -41,7 +41,7 @@ test('redirects unknown routes to /404', async ({ page }) => {
   await expect(page.getByText('Try another page.')).toBeVisible()
 })
 
-test('loads the prerendered /404 page directly', async ({ page }) => {
+test('loads the /404 page directly', async ({ page }) => {
   await page.goto('/404')
 
   await expect(page).toHaveURL(/\/404$/)
@@ -106,4 +106,40 @@ test('preserves failures for missing static assets', async ({ request }) => {
     expect(response.ok()).toBeFalsy()
     expect(response.headers()['content-type']).not.toContain('text/html')
   }
+})
+
+test('responds 404 for the /404 page', async ({ request }) => {
+  const response = await request.get('/404')
+  expect(response.status()).toBe(404)
+  expect(await response.text()).toContain('Try another page.')
+})
+
+test('redirects unknown and missing routes to /404 on the server', async ({
+  request,
+}) => {
+  for (const path of ['/does-not-exist', '/blog/missing-post']) {
+    const response = await request.get(path, { maxRedirects: 0 })
+    expect(response.status()).toBe(307)
+    expect(response.headers()['location']).toBe('/404')
+  }
+})
+
+test('preserves query on the /about edge redirect', async ({ request }) => {
+  const response = await request.get('/about?x=1', { maxRedirects: 0 })
+  expect(response.status()).toBe(301)
+  expect(response.headers()['location']).toBe('/?x=1')
+})
+
+test('server-renders page content without JavaScript', async ({ request }) => {
+  const home = await request.get('/')
+  expect(home.status()).toBe(200)
+  expect(home.headers()['content-type']).toContain('text/html')
+  expect(home.headers()['cache-control']).toBe('no-cache')
+  const html = await home.text()
+  expect(html).toContain('I am a web-developer with')
+  expect(html).toContain('href="/blog"')
+
+  const blog = await request.get('/blog')
+  expect(blog.status()).toBe(200)
+  expect(await blog.text()).toContain('Sanity is not configured yet.')
 })

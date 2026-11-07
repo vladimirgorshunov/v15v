@@ -11,7 +11,7 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'bun --bun run build && bun tests/e2e/static-server.ts',
+    command: 'bun run build && bun run preview',
     env: {
       ...process.env,
       VITE_SANITY_PROJECT_ID: '',
