@@ -53,6 +53,11 @@ The remaining packages are `adm-zip`, `js-yaml` 3, `minimatch` 9/10, and
 `uuid` 8/10. No dependency overrides are used. Studio stays on Sanity 5,
 ESLint config 6, and TypeScript 5; Node typings follow Node 26 and jsdom stays on 30.
 
+CI and production deployment jobs are pinned to `ubuntu-26.04` so
+`ubuntu-latest` migrations do not change the runner OS unexpectedly.
+Playwright is pinned to `1.65.0`, which includes Ubuntu 26.04 platform and
+browser dependency support.
+
 ## URL Contracts Preserved
 
 - `/` main page
