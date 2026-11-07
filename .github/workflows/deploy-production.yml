@@ -1,34 +1,27 @@
 name: Deploy Production
 
 on:
-  pull_request:
+  push:
     branches:
       - master
-    types:
-      - closed
   workflow_dispatch:
     inputs:
       ref:
-        description: Commit SHA, tag, or branch to deploy (optional)
+        description: Commit SHA, tag, or branch on master history (empty uses master)
         required: false
         type: string
         default: ''
 
 concurrency:
   group: production-deploy
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: read
 
 jobs:
   verify:
-    name: Verify merged commit
-    if: >-
-      ${{
-        github.event_name == 'workflow_dispatch' ||
-        (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
-      }}
+    name: Verify deployment commit
     runs-on: ubuntu-26.04
     environment: production
     env:
@@ -37,26 +30,36 @@ jobs:
       VITE_SANITY_API_VERSION: ${{ vars.VITE_SANITY_API_VERSION }}
       VITE_SANITY_USE_CDN: ${{ vars.VITE_SANITY_USE_CDN }}
     steps:
-      - name: Resolve deployment ref
-        id: resolve_ref
+      - name: Require the protected workflow branch
         env:
-          MANUAL_REF: ${{ github.event.inputs.ref }}
-          EVENT_NAME: ${{ github.event_name }}
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
-          FALLBACK_SHA: ${{ github.sha }}
+          WORKFLOW_REF: ${{ github.ref }}
         run: |
-          if [ -n "$MANUAL_REF" ]; then
-            echo "value=$MANUAL_REF" >> "$GITHUB_OUTPUT"
-          elif [ "$EVENT_NAME" = "pull_request" ] && [ -n "$MERGE_SHA" ]; then
-            echo "value=$MERGE_SHA" >> "$GITHUB_OUTPUT"
-          else
-            echo "value=$FALLBACK_SHA" >> "$GITHUB_OUTPUT"
-          fi
+          test "$WORKFLOW_REF" = refs/heads/master || {
+            echo "Production deployments must run the workflow from master"
+            exit 1
+          }
 
-      - name: Checkout merge commit
+      - name: Checkout master history
         uses: actions/checkout@v7.0.1
         with:
-          ref: ${{ steps.resolve_ref.outputs.value }}
+          ref: master
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate and checkout deployment commit
+        env:
+          MANUAL_REF: ${{ inputs.ref }}
+        run: |
+          set -euo pipefail
+          requested_ref="${MANUAL_REF:-refs/remotes/origin/master}"
+          commit="$(git rev-parse --verify --end-of-options "${requested_ref}^{commit}" 2>/dev/null ||
+            git rev-parse --verify --end-of-options "refs/remotes/origin/${requested_ref}^{commit}")"
+          git merge-base --is-ancestor "$commit" refs/remotes/origin/master || {
+            echo "Deployment ref must resolve to a commit on master history"
+            exit 1
+          }
+          git checkout --detach "$commit"
+          echo "Deploying master-history commit: $commit"
 
       - name: Setup Node
         uses: actions/setup-node@v7.1.0
@@ -90,7 +93,10 @@ jobs:
 
       - name: Validate static build output
         run: |
-          test -f .output/public/index.html || (echo "Missing file: .output/public/index.html" && exit 1)
+          test -s .output/public/index.html
+          test -s .output/public/_shell.html
+          test -s .output/public/404/index.html
+          test -d .output/public/assets
 
       - name: Upload static artifact
         uses: actions/upload-artifact@v7.0.2
@@ -128,16 +134,40 @@ jobs:
           name: site-public
           path: site-public
 
+      - name: Require complete downloaded entries
+        run: |
+          test -s site-public/index.html
+          test -s site-public/_shell.html
+          test -s site-public/404/index.html
+          test -d site-public/assets
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6.3.0
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Sync files to S3
+      - name: Publish versioned assets first
         env:
           S3_BUCKET: ${{ vars.S3_BUCKET }}
-        run: aws s3 sync site-public/ "s3://$S3_BUCKET" --delete
+        run: |
+          aws s3 cp site-public/assets/ "s3://$S3_BUCKET/assets/" \
+            --recursive --cache-control 'public,max-age=31536000,immutable'
+
+      - name: Publish other static resources
+        env:
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+        run: |
+          aws s3 cp site-public/ "s3://$S3_BUCKET/" --recursive \
+            --exclude 'assets/*' --exclude '*.html' \
+            --cache-control 'public,max-age=0,must-revalidate'
+
+      - name: Publish HTML entries last
+        env:
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+        run: |
+          aws s3 cp site-public/ "s3://$S3_BUCKET/" --recursive \
+            --exclude '*' --include '*.html' --cache-control 'no-cache'
 
       - name: Invalidate CloudFront cache
         env:

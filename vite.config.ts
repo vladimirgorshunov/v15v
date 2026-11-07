@@ -19,15 +19,20 @@ const config = defineConfig({
       projects: ['./tsconfig.json'],
     }),
     tanstackStart({
+      spa: {
+        enabled: true,
+        // Keep the shell request distinct from the prerendered home page.
+        maskPath: '/_shell',
+        prerender: {
+          outputPath: '/_shell',
+        },
+      },
+      pages: [{ path: '/' }, { path: '/404' }],
       prerender: {
         enabled: true,
         autoSubfolderIndex: true,
-        autoStaticPathsDiscovery: true,
-        crawlLinks: true,
-        // Blog data comes from Sanity at runtime; skip blog prerender to avoid
-        // build-time Sanity client crashes in CI and always emit static index.html.
-        filter: (page) =>
-          !page.path.startsWith('/static/') && !page.path.startsWith('/blog'),
+        autoStaticPathsDiscovery: false,
+        crawlLinks: false,
         failOnError: true,
       },
     }),
