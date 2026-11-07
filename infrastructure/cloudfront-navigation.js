@@ -6,12 +6,13 @@ function handler(event) {
   if (uri === '/about' || uri === '/about/') {
     const pairs = []
     const query = request.querystring || {}
-    for (const key in query) {
+    // CloudFront supports ES5 iteration, not for...of.
+    Object.keys(query).forEach(function (key) {
       const values = query[key].multiValue || [query[key]]
-      for (const value of values) {
+      values.forEach(function (value) {
         pairs.push(key + '=' + value.value)
-      }
-    }
+      })
+    })
     return {
       statusCode: 301,
       statusDescription: 'Moved Permanently',
