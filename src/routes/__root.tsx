@@ -22,7 +22,7 @@ const RootDocument = ({ children }: { children: React.ReactNode }) => {
     document.documentElement.setAttribute('data-theme', theme);
     const themeColorMeta = document.querySelector('meta[name="theme-color"]');
     if (themeColorMeta) {
-      themeColorMeta.setAttribute('content', theme === 'dark' ? '#1b1712' : '#4DBA87');
+      themeColorMeta.setAttribute('content', theme === 'dark' ? '#1b1712' : '#FFFFFF');
     }
   } catch (e) {}
 })();`

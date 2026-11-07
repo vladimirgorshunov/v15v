@@ -6,7 +6,7 @@ type Theme = 'light' | 'dark'
 
 const STORAGE_KEY = 'v15v-theme'
 const THEME_META_COLOR: Record<Theme, string> = {
-  light: '#4DBA87',
+  light: '#FFFFFF',
   dark: '#1b1712',
 }
 const THEME_LABEL: Record<Theme, string> = {
