@@ -1,5 +1,4 @@
 import {
-  ClientOnly,
   HeadContent,
   Scripts,
   createRootRoute,
@@ -37,10 +36,7 @@ const RootDocument = ({ children }: { children: React.ReactNode }) => {
       <body>
         <div id="app">
           <ThemeToggle />
-          {/* Active links depend on the URL, unlike the shared SPA shell. */}
-          <ClientOnly>
-            <Navigation />
-          </ClientOnly>
+          <Navigation />
           {children}
         </div>
         <Scripts />
@@ -50,6 +46,7 @@ const RootDocument = ({ children }: { children: React.ReactNode }) => {
 }
 
 export const Route = createRootRoute({
+  headers: () => ({ 'Cache-Control': 'no-cache' }),
   head: () => ({
     meta: [
       {

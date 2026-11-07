@@ -18,25 +18,8 @@ const config = defineConfig({
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],
     }),
-    tanstackStart({
-      spa: {
-        enabled: true,
-        // Keep the shell request distinct from the prerendered home page.
-        maskPath: '/_shell',
-        prerender: {
-          outputPath: '/_shell',
-        },
-      },
-      pages: [{ path: '/' }, { path: '/404' }],
-      prerender: {
-        enabled: true,
-        autoSubfolderIndex: true,
-        autoStaticPathsDiscovery: false,
-        crawlLinks: false,
-        failOnError: true,
-      },
-    }),
-    nitro(),
+    tanstackStart(),
+    nitro({ preset: 'aws-lambda' }),
     viteReact(),
   ],
 })

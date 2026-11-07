@@ -91,12 +91,16 @@ jobs:
       - name: Build
         run: bun run build
 
-      - name: Validate static build output
+      - name: Validate SSR build output
         run: |
-          test -s .output/public/index.html
-          test -s .output/public/_shell.html
-          test -s .output/public/404/index.html
+          test -s .output/server/index.mjs
           test -d .output/public/assets
+          node --input-type=module -e "import { invokeLambdaHandler } from 'srvx/aws-lambda'; const { handler } = await import('./.output/server/index.mjs'); const r = await invokeLambdaHandler(handler, new Request('https://v15v.com/')); const t = await r.text(); if (r.status !== 200 || !t.includes('I am a web-developer with')) { console.error('SSR smoke failed', r.status); process.exit(1) }"
+
+      - name: Package Lambda
+        run: |
+          (cd .output/server && zip -qr "$GITHUB_WORKSPACE/site-server.zip" .)
+          test "$(stat -c%s site-server.zip)" -lt 50000000
 
       - name: Upload static artifact
         uses: actions/upload-artifact@v7.0.2
@@ -106,12 +110,22 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+      - name: Upload Lambda artifact
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: site-server
+          path: site-server.zip
+          if-no-files-found: error
+          retention-days: 7
+
   deploy:
     name: Deploy to production
     needs:
       - verify
     runs-on: ubuntu-26.04
     environment: production
+    env:
+      LAMBDA_ALIAS: production
     permissions:
       contents: read
       id-token: write
@@ -122,11 +136,13 @@ jobs:
           AWS_REGION: ${{ vars.AWS_REGION }}
           S3_BUCKET: ${{ vars.S3_BUCKET }}
           CF_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+          LAMBDA_FUNCTION_NAME: ${{ vars.LAMBDA_FUNCTION_NAME }}
         run: |
           test -n "$AWS_ROLE_ARN" || (echo "Missing secret: AWS_ROLE_ARN" && exit 1)
           test -n "$AWS_REGION" || (echo "Missing variable: AWS_REGION" && exit 1)
           test -n "$S3_BUCKET" || (echo "Missing variable: S3_BUCKET" && exit 1)
           test -n "$CF_DISTRIBUTION_ID" || (echo "Missing variable: CLOUDFRONT_DISTRIBUTION_ID" && exit 1)
+          test -n "$LAMBDA_FUNCTION_NAME" || (echo "Missing variable: LAMBDA_FUNCTION_NAME" && exit 1)
 
       - name: Download static artifact
         uses: actions/download-artifact@v8.0.2
@@ -134,12 +150,16 @@ jobs:
           name: site-public
           path: site-public
 
+      - name: Download Lambda artifact
+        uses: actions/download-artifact@v8.0.2
+        with:
+          name: site-server
+          path: .
+
       - name: Require complete downloaded entries
         run: |
-          test -s site-public/index.html
-          test -s site-public/_shell.html
-          test -s site-public/404/index.html
           test -d site-public/assets
+          test -s site-server.zip
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6.3.0
@@ -159,15 +179,50 @@ jobs:
           S3_BUCKET: ${{ vars.S3_BUCKET }}
         run: |
           aws s3 cp site-public/ "s3://$S3_BUCKET/" --recursive \
-            --exclude 'assets/*' --exclude '*.html' \
+            --exclude 'assets/*' \
             --cache-control 'public,max-age=0,must-revalidate'
 
-      - name: Publish HTML entries last
+      - name: Publish Lambda version
+        id: publish
         env:
-          S3_BUCKET: ${{ vars.S3_BUCKET }}
+          LAMBDA_FUNCTION_NAME: ${{ vars.LAMBDA_FUNCTION_NAME }}
         run: |
-          aws s3 cp site-public/ "s3://$S3_BUCKET/" --recursive \
-            --exclude '*' --include '*.html' --cache-control 'no-cache'
+          version="$(aws lambda update-function-code --function-name "$LAMBDA_FUNCTION_NAME" \
+            --zip-file fileb://site-server.zip --publish --query Version --output text)"
+          aws lambda wait published-version-active --function-name "$LAMBDA_FUNCTION_NAME" --qualifier "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Smoke-test the new version
+        env:
+          LAMBDA_FUNCTION_NAME: ${{ vars.LAMBDA_FUNCTION_NAME }}
+          VERSION: ${{ steps.publish.outputs.version }}
+        run: |
+          set -euo pipefail
+          for path in / /blog; do
+            cat > smoke-event.json <<EOF
+          {"version":"2.0","routeKey":"\$default","rawPath":"$path","rawQueryString":"","headers":{"host":"v15v.com","accept":"text/html","x-forwarded-proto":"https"},"requestContext":{"http":{"method":"GET","path":"$path","protocol":"HTTP/1.1","sourceIp":"127.0.0.1","userAgent":"deploy-smoke"}},"isBase64Encoded":false}
+          EOF
+            aws lambda invoke --function-name "$LAMBDA_FUNCTION_NAME" --qualifier "$VERSION" \
+              --cli-binary-format raw-in-base64-out --payload fileb://smoke-event.json \
+              smoke-response.json > invoke-meta.json
+            jq -e '.FunctionError == null' invoke-meta.json
+            jq -e '.statusCode == 200' smoke-response.json
+            body="$(jq -r 'if .isBase64Encoded then (.body|@base64d) else .body end' smoke-response.json)"
+            if [ "$path" = / ]; then
+              grep -q 'I am a web-developer with' <<< "$body"
+            else
+              grep -q '<h1' <<< "$body"
+            fi
+          done
+
+      - name: Switch production alias
+        env:
+          LAMBDA_FUNCTION_NAME: ${{ vars.LAMBDA_FUNCTION_NAME }}
+          VERSION: ${{ steps.publish.outputs.version }}
+        run: |
+          previous="$(aws lambda get-alias --function-name "$LAMBDA_FUNCTION_NAME" --name "$LAMBDA_ALIAS" --query FunctionVersion --output text)"
+          aws lambda update-alias --function-name "$LAMBDA_FUNCTION_NAME" --name "$LAMBDA_ALIAS" --function-version "$VERSION"
+          echo "Lambda $LAMBDA_ALIAS: $previous -> $VERSION (rollback: aws lambda update-alias --function-name $LAMBDA_FUNCTION_NAME --name $LAMBDA_ALIAS --function-version $previous)" | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Invalidate CloudFront cache
         env:

@@ -1,10 +1,8 @@
-# AWS Static Deployment Runbook
+# AWS SSR Deployment Runbook
 
-The production site uses private S3 storage behind CloudFront and Route 53.
-GitHub Actions publishes protected `master` commits, including explicitly selected
-older commits for rollback. The settings below are the required configuration;
-use the verification steps to establish live state, not this document as proof of
-an applied change.
+CloudFront serves every page through a buffered Lambda Function URL. Private S3
+serves only static files. GitHub Actions publishes protected `master` commits.
+These are required settings, not proof of live state; verify after each change.
 
 ## 1. Resource Inventory
 
@@ -14,6 +12,10 @@ Known production resources:
 - S3 bucket: `v15v-frontend-prod`, region `eu-north-1`
 - CloudFront distribution: `E2F8HY0X5P5F2R`
 - Domains: `v15v.com` and `www.v15v.com`
+- Lambda: `v15v-ssr`, alias `production`, region `eu-north-1`
+- Runtime: `nodejs24.x`, arm64, handler `index.handler`, 1024 MB, 10 s
+- Execution role: `v15v-ssr-lambda`; logs `/aws/lambda/v15v-ssr`, 30-day retention
+- Lambda OAC: `v15v-ssr-lambda-oac`, origin type `lambda`, SigV4 `always`
 
 Use scoped, temporary non-root credentials for inventory and configuration
 repairs. The deployment role only publishes artifacts; it is not an
@@ -40,8 +42,8 @@ Repair resources:
 - Issued ACM certificate in `us-east-1`:
   `arn:aws:acm:us-east-1:031152122952:certificate/5ab9705f-cc60-4819-a295-53dcb711eaec`.
 - OAC: `EG0MIJXG7JJII`.
-- Navigation function: `v15v-navigation`, sourced from
-  `infrastructure/cloudfront-navigation.js`.
+- Redirect function: `v15v-about-redirect`, sourced from
+  `infrastructure/cloudfront-about-redirect.js`.
 
 Inspect the distribution and LIVE function when verifying deployed state.
 
@@ -90,30 +92,43 @@ The origin-read bucket policy statement is:
 - Set viewer protocol policy to `redirect-to-https` for every applicable cache
   behavior. Remove the legacy `/*` behavior that used `allow-all` and shadowed
   the default HTTPS policy; checking only the default behavior is insufficient.
-- Use minimum cache TTL zero for HTML/shell responses so their origin `no-cache`
-  headers are respected. Disable HTML caching if the policy cannot honor these
-  headers. Hashed assets may retain their long immutable lifetime.
+- Disable HTML caching using managed `CachingDisabled`
+  (`4135ea2d-6df8-44a3-9df3-4b5a84be39ad`). HTML emits `Cache-Control: no-cache`.
 
-### Genuine shell, not an error-to-home fallback
+### Lambda pages and S3 assets
 
-The static artifact contains:
+The default behavior targets origin `v15v-ssr-lambda`, using the alias Function
+URL with `AWS_IAM` authentication and `BUFFERED` invocation. Attach the Lambda
+OAC, and allow CloudFront `lambda:InvokeFunctionUrl` and `lambda:InvokeFunction`
+on the alias, constrained to this distribution's ARN. Anonymous direct Function
+URL access must return 403. No VPC is needed for public Sanity HTTPS reads.
 
-- `index.html`: prerendered home page.
-- `_shell.html`: TanStack's generated SPA/hydration shell, not home-page HTML.
-- `404/index.html`: prerendered not-found entry.
-- `assets/`: generated versioned client bundles and resources.
+Use managed `AllViewerExceptHostHeader`
+(`b689b0a8-53d0-40ab-baf2-68738e2966ac`) to forward query strings, cookies and
+headers except the viewer Host, which Function URLs reject. Allow GET/HEAD only.
+Browser POST/PUT through Lambda OAC requires `x-amz-content-sha256`; adding
+server functions needs a separate design.
 
-Associate the production routing function at **viewer request**. Preserve the
-`/about` to `/` redirect, serve `/` from the home entry, and rewrite client
-navigation (including `/blog` and blog-detail deep links) to `/_shell.html`.
-Retain the dedicated `/404` entry. Static resource requests, including missing
-`.js`, `.css`, images and `/static/CV.pdf`, must not be rewritten to home or the
-shell. Unknown navigation must reach the application's not-found handling, not
-hydrate a prerendered home page.
+Four ordered behaviors target the unchanged private S3 origin/OAC:
+`/assets/*`, `/static/*`, `/favicon.ico`, `/robots.txt`. They inherit the previous
+S3 caching/request/response policies and have no edge function.
 
-The static-only browser test server executes the same navigation function source.
-Navigation links inside the shared shell render after hydration because their
-active state depends on the requested URL.
+Only the default behavior uses the viewer-request redirect function:
+`/about` and `/about/` return 301 to `/`, preserving query pairs. All other
+requests pass unchanged to Lambda. Unknown URLs and missing posts redirect 307
+to `/404`; `/404` responds 404.
+
+`bun run build` produces `.output/server/index.mjs` exporting `handler` and
+`.output/public/` containing assets/static resources, no HTML. Lambda does not
+serve static files. `bun run preview` starts `tests/e2e/edge-server.ts` on
+127.0.0.1:4173, emulating the exact behavior split and invoking the built Lambda.
+Build before preview. Playwright builds automatically with Sanity disabled.
+Run the build with Node (`bun run build`), never with `bun --bun run build`.
+Nitro uses the host's built-in module list; Bun lists `undici` as a built-in
+although Node Lambda does not. A Bun-hosted build therefore omits a Sanity
+runtime dependency. Verify the archive outside the repository's `node_modules`
+and invoke the published Lambda before promoting its alias.
+
 
 CloudFront JavaScript runtime 2.0 is not Node.js: it supports ES5 iteration but
 not `for...of`. Keep the edge source within the
@@ -123,11 +138,8 @@ Before promotion, test the DEVELOPMENT function in CloudFront with
 tests do not establish platform syntax compatibility. After publishing, verify
 live home, alias redirect, blog navigation, and missing-asset responses.
 
-Remove global `403`/`404` custom error responses that return `/index.html` with
-status `200`. Private S3 may return `403` for a missing object; preserve the
-non-success status for missing assets instead of replacing it with HTML. The
-viewer-request rewrite selects the real shell before origin access; it is not
-an error fallback. An absent shell must therefore fail deployment validation.
+Keep global custom error responses empty. Missing S3 files must retain their
+non-success status rather than becoming an HTML page with status 200.
 
 ## 3. GitHub OIDC Deploy Role
 
@@ -163,11 +175,9 @@ part of this security boundary.
 
 ### Deployment permissions
 
-The existing deployment permissions can use this scope. The workflow performs
-only local-to-S3 uploads and CloudFront invalidation; it does not need
-`s3:GetObject`, public ACL permissions, or bucket-policy administration.
-`DeleteObject` is an existing permission, not an instruction to delete retained
-assets; the workflow never invokes deletion.
+Keep existing S3/CloudFront permissions untouched. The workflow retains old
+objects and never invokes deletion. It does not need public ACLs, object reads,
+bucket-policy administration, or `iam:PassRole`.
 
 ```json
 {
@@ -195,6 +205,32 @@ assets; the workflow never invokes deletion.
 }
 ```
 
+Add a separate inline policy `v15v-ssr-deploy` on the existing deploy role:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "PublishSsrLambda",
+    "Effect": "Allow",
+    "Action": [
+      "lambda:UpdateFunctionCode", "lambda:PublishVersion", "lambda:GetFunction",
+      "lambda:GetFunctionConfiguration", "lambda:InvokeFunction",
+      "lambda:GetAlias", "lambda:UpdateAlias"
+    ],
+    "Resource": [
+      "arn:aws:lambda:eu-north-1:031152122952:function:v15v-ssr",
+      "arn:aws:lambda:eu-north-1:031152122952:function:v15v-ssr:*"
+    ]
+  }]
+}
+```
+
+The execution role trusts `lambda.amazonaws.com` and grants only
+`logs:CreateLogStream` and `logs:PutLogEvents` on
+`arn:aws:logs:eu-north-1:031152122952:log-group:/aws/lambda/v15v-ssr:*`.
+Create the log group separately and retain logs for 30 days.
+
 ## 4. GitHub Repository Configuration
 
 Create the `production` environment and allow deployments from **only the
@@ -207,6 +243,7 @@ Configure these repository or environment variables:
 - `AWS_REGION` = `eu-north-1`
 - `S3_BUCKET` = `v15v-frontend-prod`
 - `CLOUDFRONT_DISTRIBUTION_ID` = `E2F8HY0X5P5F2R`
+- `LAMBDA_FUNCTION_NAME` = `v15v-ssr`
 - `VITE_SANITY_PROJECT_ID` (required)
 - `VITE_SANITY_DATASET` (required)
 - `VITE_SANITY_API_VERSION` (optional)
@@ -239,19 +276,23 @@ Workflow: `.github/workflows/deploy-production.yml`.
 4. With production variables, run lint, typecheck, unit tests, and build using
    the workflow's existing pinned actions/runtimes. Require Sanity project and
    dataset values.
-5. Validate nonempty home, shell, and 404 entries and the generated assets
-   directory. Upload `.output/public` as `site-public`. The deploy job checks the
-   downloaded entries again before acquiring AWS credentials. Static-only browser
-   checks verify the shell's runtime routing and hydration behavior.
+5. Require `.output/server/index.mjs` and `.output/public/assets`, then invoke
+   the local handler with Node and require home-page HTML. Zip the server
+   directory (under 50,000,000 bytes). Upload `site-public` and `site-server`
+   artifacts; require both downloaded artifacts before AWS authentication.
 6. Upload `assets/` **first**, with
    `Cache-Control: public,max-age=31536000,immutable`.
-7. Upload other non-HTML static resources with
+7. Upload other static resources with
    `Cache-Control: public,max-age=0,must-revalidate`.
-8. Upload all HTML entries, including `_shell.html`, **last**, with
-   `Cache-Control: no-cache`. New HTML therefore refers to assets already
-   uploaded. All uploads retain prior objects; there is no `sync --delete` or
-   other deletion of old hashed chunks that active clients still need.
-9. Invalidate CloudFront `/*` and wait for invalidation completion.
+8. Update Lambda code and publish an immutable version. Wait until active.
+9. Invoke that qualified version for `/` and `/blog` with Function URL v2
+   events. Require no FunctionError, status 200, home text and a blog heading.
+   Any failed check stops deployment before the production alias changes.
+10. Move `production` to the verified version. The Actions summary prints the
+    previous/new versions and the exact instant alias rollback command.
+11. Invalidate CloudFront `/*` and wait for completion.
+
+Old hashed assets are never deleted, keeping earlier Lambda versions usable.
 
 The workflow-level `production-deploy` concurrency group serializes the entire
 verify/deploy run with `cancel-in-progress: false`. New runs do not abort an
@@ -274,17 +315,27 @@ In **Deploy Production → Run workflow**, select workflow branch `master`:
 - Leave `ref` empty for current master.
 - Supply a previous known-good master-history commit SHA for rollback, or a tag
   resolving to such a commit. Unmerged branches and unrelated commits fail.
-- Use a commit that emits the current shell/artifact contract. A commit from
-  before `_shell.html` support is not a valid rollback target; artifact
-  validation intentionally rejects it.
+- Only post-SSR commits are valid rollback targets. Pre-SSR commits fail the
+  `.output/server/index.mjs` artifact check intentionally.
 
 Wait for verification, deployment, and CloudFront invalidation to succeed, then
 perform the checks below. A rollback rebuilds the selected source with the
 current workflow and current production Sanity configuration/content; it does
 not restore a historical CMS snapshot. Previously published hashed assets are
 retained for existing clients. Do not manually prune them during an incident.
-If publication fails partway through, rerun a known-good compatible commit;
-HTML-last ordering reduces missing-chunk risk but does not make uploads atomic.
+Instant application rollback (use the version printed in the Actions summary):
+
+```bash
+aws lambda update-alias --region eu-north-1 --function-name v15v-ssr \
+  --name production --function-version <previous-version>
+```
+
+For infrastructure rollback, keep the pre-cutover `get-distribution-config`
+response outside the repository. Fetch the current ETag, restore the saved
+`DistributionConfig` with `update-distribution --if-match`, wait for deployment,
+then invalidate `/*` and wait. The old S3 HTML (`index.html`, `_shell.html`,
+`404/index.html`), old assets and unattached `v15v-navigation` function are
+intentionally retained for this rollback. Do not delete them during cutover.
 
 ## 7. Verification and Troubleshooting
 
@@ -301,14 +352,17 @@ exercise actual browser navigation. Do not infer success from a build alone.
   object requests must fail while the CloudFront site succeeds.
 - Load `/`, directly load and reload `/blog` and a real blog-detail URL, and
   navigate between them. Check browser console for hydration or chunk errors.
-- Verify `/about` redirects to `/`, `/static/CV.pdf` is a PDF, and unknown client
-  routes show the application's not-found handling rather than home content.
+- Verify `/about?x=1` returns 301 to `/?x=1`, `/static/CV.pdf` is a PDF,
+  unknown URLs and missing posts return 307 to `/404`, and `/404` returns 404.
 - Request a deliberately missing `/assets/not-present.js`: expect a non-success
   response, never HTML with status `200`. Repeat for a missing static file.
-- Check `Cache-Control` on HTML/shell (`no-cache`) and a real hashed asset
-  (`public,max-age=31536000,immutable`). Ensure CloudFront's policy honors HTML
-  revalidation. Keep an old page open across a deploy and confirm its older
-  lazy-loaded chunks remain available.
+- Check HTML `Cache-Control: no-cache`, article body text without JavaScript,
+  and hashed asset `public,max-age=31536000,immutable`. Direct Function URL
+  requests must return 403. Keep old chunks available across deployments.
+- Check cold `REPORT` log lines: `Init Duration` ≤1500 ms. After at least
+  30 minutes idle, measure home `time_starttransfer` ≤3 s. If exceeded, raise
+  memory to 1536 MB and publish/smoke/switch a new version before remeasuring.
+  Do not enable provisioned concurrency without approval (fixed monthly cost).
 - Inspect the Actions run to confirm the selected commit is on master history,
   publication order, and completed invalidation. A rejected unmerged manual
   ref must stop before dependency installation or repository scripts run.
@@ -318,7 +372,6 @@ secrets/variables and both jobs' environment bindings. For OIDC `AccessDenied`,
 check the exact audience/environment subject, master-only environment rule, and
 role ARN. For S3 errors, check bucket and identity-policy scopes; do not fix them
 by making the bucket public or adding object-read permissions to the deployer.
-For shell/artifact validation failures, inspect the selected source's build
-configuration and generated output; do not replace the shell with home HTML or
-restore a global error fallback. Live configuration repairs require separately
-authorized AWS/GitHub administration, not broader deployment-role privileges.
+For artifact validation failures, inspect the selected source and generated
+Lambda output. Never restore an HTML error fallback. Infrastructure repairs
+require separately authorized administration, not broader deploy-role privileges.
