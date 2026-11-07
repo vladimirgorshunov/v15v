@@ -1,5 +1,13 @@
 import styles from './portableTextComponents.module.css'
-import type { PortableTextComponents } from '@portabletext/react'
+import type {
+  PortableTextComponents,
+  PortableTextMarkComponentProps,
+} from '@portabletext/react'
+
+type PortableLinkValue = {
+  _type: 'link'
+  href?: unknown
+}
 
 type PortableImageValue = {
   alt?: string
@@ -19,7 +27,10 @@ type PortableCodeBlockValue = {
 
 export const portableTextComponents: PortableTextComponents = {
   marks: {
-    link: ({ children, value }) => {
+    link: ({
+      children,
+      value,
+    }: PortableTextMarkComponentProps<PortableLinkValue>) => {
       const href = typeof value?.href === 'string' ? value.href : '#'
       const isExternal = /^https?:\/\//.test(href)
 

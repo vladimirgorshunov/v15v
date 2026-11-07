@@ -1,9 +1,17 @@
 import { isSanityConfigured, sanityClient } from '@/lib/sanity'
 
+type PortableTextValue =
+  | string
+  | number
+  | boolean
+  | null
+  | Array<PortableTextValue>
+  | { [key: string]: PortableTextValue | undefined }
+
 export type PortableTextNode = {
   _key?: string
   _type: string
-  [key: string]: {} | undefined
+  [key: string]: PortableTextValue | undefined
 }
 
 export type BlogPostListItem = {
