@@ -103,6 +103,10 @@ OAC, and allow CloudFront `lambda:InvokeFunctionUrl` and `lambda:InvokeFunction`
 on the alias, constrained to this distribution's ARN. Anonymous direct Function
 URL access must return 403. No VPC is needed for public Sanity HTTPS reads.
 
+Set the distribution's `DefaultRootObject` to an empty string. Retaining the
+static site's `index.html` value makes CloudFront request `/index.html` from
+Lambda instead of `/`, causing the home URL to redirect to `/404`.
+
 Use managed `AllViewerExceptHostHeader`
 (`b689b0a8-53d0-40ab-baf2-68738e2966ac`) to forward query strings, cookies and
 headers except the viewer Host, which Function URLs reject. Allow GET/HEAD only.
@@ -123,12 +127,12 @@ to `/404`; `/404` responds 404.
 serve static files. `bun run preview` starts `tests/e2e/edge-server.ts` on
 127.0.0.1:4173, emulating the exact behavior split and invoking the built Lambda.
 Build before preview. Playwright builds automatically with Sanity disabled.
+
 Run the build with Node (`bun run build`), never with `bun --bun run build`.
 Nitro uses the host's built-in module list; Bun lists `undici` as a built-in
 although Node Lambda does not. A Bun-hosted build therefore omits a Sanity
 runtime dependency. Verify the archive outside the repository's `node_modules`
 and invoke the published Lambda before promoting its alias.
-
 
 CloudFront JavaScript runtime 2.0 is not Node.js: it supports ES5 iteration but
 not `for...of`. Keep the edge source within the
