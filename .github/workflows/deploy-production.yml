@@ -29,7 +29,7 @@ jobs:
         github.event_name == 'workflow_dispatch' ||
         (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
       }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     environment: production
     env:
       VITE_SANITY_PROJECT_ID: ${{ vars.VITE_SANITY_PROJECT_ID }}
@@ -104,7 +104,7 @@ jobs:
     name: Deploy to production
     needs:
       - verify
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     environment: production
     permissions:
       contents: read
