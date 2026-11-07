@@ -28,6 +28,9 @@ The dev server runs on [http://localhost:4040](http://localhost:4040).
 Browser chrome follows the selected theme via `theme-color`: white (`#FFFFFF`)
 in light mode and `#1b1712` in dark mode, on load and when switching themes.
 
+Automatic Vercel deployments are disabled for all branches in `vercel.json`.
+This does not uninstall the Vercel GitHub App or disconnect its project.
+
 `bun run typecheck` uses the native TypeScript 7 compiler. The `typescript`
 dependency aliases the TypeScript 6 compatibility package for
 tools that still require the compiler API; `@typescript/native` supplies `tsc`.
