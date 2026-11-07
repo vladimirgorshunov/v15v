@@ -4,18 +4,19 @@ Personal website migrated to TanStack Start (React + TypeScript) with static pre
 
 ## Stack
 
-- TanStack Start + TanStack Router
+- TanStack Start 1.169.4 + TanStack Router 1.170.46
 - React 19 + TypeScript (strict)
 - Bun package manager
 - Sanity CMS (`@sanity/client`) for blog content
 - Portable Text rendering (`@portabletext/react`) with custom block mappings
-- ESLint + Prettier
+- Native `bun lint` + `bun fmt` (configured in `bunfig.toml`)
 - Bun unit tests + Playwright e2e smoke tests
 
 ## Development
 
-Use Bun 1.4.3 or newer and Node 24.15.0 or newer. CI pins Bun 1.4.3
-and Node 24.21.0; Node typings follow the 24.x runtime.
+Use Bun canary (`bun upgrade --canary`) and Node 26.13.0 LTS or newer.
+CI and deployment use rolling Bun canary via `oven-sh/setup-bun` and pin
+Node 26.13.0; Node typings follow the 26.x runtime. Canary provides native `bun lint`.
 
 ```bash
 bun install
@@ -25,20 +26,32 @@ bun --bun run dev
 The dev server runs on [http://localhost:4040](http://localhost:4040).
 
 `bun run typecheck` uses the native TypeScript 7 compiler. The `typescript`
-dependency aliases the TypeScript 6 compatibility package for ESLint and other
+dependency aliases the TypeScript 6 compatibility package for
 tools that still require the compiler API; `@typescript/native` supplies `tsc`.
 See [the package upgrade notes](docs/migration/package-upgrade-2026-10.md).
 
 ## Quality Gates
 
 ```bash
-bun --bun run lint
+bun lint
 bun --bun run typecheck
 bun --bun run typecheck:all
 bun --bun run test:unit
 bun --bun run test:e2e
 bun --bun run build
 ```
+
+Native lint uses type-aware TanStack rules, with `unicorn/prefer-node-protocol`
+replacing the Node rule. The unsupported spaced-comment rule is omitted;
+`only-throw-error` is off for TanStack redirects. `no-var` and `prefer-const`
+remain errors. Generated routes and the separately maintained Studio are excluded.
+The Studio retains its Sanity ESLint configuration.
+
+Dependency security refresh (2026-11-07): website audit is clean; Studio has
+18 upstream-range-blocked advisories (11 high, 7 moderate, none critical).
+The remaining packages are `adm-zip`, `js-yaml` 3, `minimatch` 9/10, and
+`uuid` 8/10. No dependency overrides are used. Studio stays on Sanity 5,
+ESLint config 6, and TypeScript 5; Node typings follow Node 26 and jsdom stays on 30.
 
 ## URL Contracts Preserved
 

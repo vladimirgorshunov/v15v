@@ -22,7 +22,7 @@
    - CV download works
    - icons/manifest resolve without 404
 4. Quality gates:
-   - `bun run lint`
+   - `bun lint`
    - `bun run typecheck`
    - `bun run test`
    - `bun run build`

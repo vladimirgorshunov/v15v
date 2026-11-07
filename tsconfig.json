@@ -1,12 +1,5 @@
 {
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "eslint.config.js",
-    "playwright.config.ts",
-    "prettier.config.js",
-    "vite.config.ts"
-  ],
+  "include": ["**/*.ts", "**/*.tsx", "playwright.config.ts", "vite.config.ts"],
   "exclude": ["sanity"],
   "compilerOptions": {
     "target": "ES2022",
