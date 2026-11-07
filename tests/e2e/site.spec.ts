@@ -41,9 +41,21 @@ test('redirects unknown routes to /404', async ({ page }) => {
   await expect(page.getByText('Try another page.')).toBeVisible()
 })
 
+test('loads the prerendered /404 page directly', async ({ page }) => {
+  await page.goto('/404')
+
+  await expect(page).toHaveURL(/\/404$/)
+  await expect(page.getByText('Try another page.')).toBeVisible()
+})
+
 test('renders blog root and sanity setup state', async ({ page }) => {
   await page.goto('/blog')
 
+  await expect(page).toHaveURL(/\/blog$/)
+  await expect(page.getByRole('heading', { name: 'Blog' })).toBeVisible()
+  await expect(page.getByText('Sanity is not configured yet.')).toBeVisible()
+
+  await page.reload()
   await expect(page).toHaveURL(/\/blog$/)
   await expect(page.getByRole('heading', { name: 'Blog' })).toBeVisible()
   await expect(page.getByText('Sanity is not configured yet.')).toBeVisible()
@@ -83,4 +95,15 @@ test('serves static asset URLs', async ({ request }) => {
 
   const iconResponse = await request.get('/static/img/icons/favicon-32x32.png')
   expect(iconResponse.ok()).toBeTruthy()
+})
+
+test('preserves failures for missing static assets', async ({ request }) => {
+  for (const path of [
+    '/assets/does-not-exist.js',
+    '/static/does-not-exist.pdf',
+  ]) {
+    const response = await request.get(path)
+    expect(response.ok()).toBeFalsy()
+    expect(response.headers()['content-type']).not.toContain('text/html')
+  }
 })

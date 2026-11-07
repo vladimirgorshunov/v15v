@@ -1,4 +1,9 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import {
+  ClientOnly,
+  HeadContent,
+  Scripts,
+  createRootRoute,
+} from '@tanstack/react-router'
 
 import { Navigation } from '@/components/Navigation'
 import { ThemeToggle } from '@/components/ThemeToggle'
@@ -32,7 +37,10 @@ const RootDocument = ({ children }: { children: React.ReactNode }) => {
       <body>
         <div id="app">
           <ThemeToggle />
-          <Navigation />
+          {/* Active links depend on the URL, unlike the shared SPA shell. */}
+          <ClientOnly>
+            <Navigation />
+          </ClientOnly>
           {children}
         </div>
         <Scripts />

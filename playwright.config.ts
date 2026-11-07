@@ -11,7 +11,7 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'bun --bun run build && bun --bun run preview',
+    command: 'bun --bun run build && bun tests/e2e/static-server.ts',
     env: {
       ...process.env,
       VITE_SANITY_PROJECT_ID: '',
@@ -19,6 +19,6 @@ export default defineConfig({
     },
     url: 'http://127.0.0.1:4173',
     timeout: 180000,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
   },
 })
