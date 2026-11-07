@@ -1,9 +1,8 @@
 import { describe, expect, test } from 'bun:test'
 import { PortableText } from '@portabletext/react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import type { PortableTextBlock } from '@portabletext/react'
-
 import { portableTextComponents } from '@/components/blog/portableTextComponents'
+import type { PortableTextBlock } from '@portabletext/react'
 
 const listItem = (text: string, level: number): PortableTextBlock => ({
   _type: 'block',

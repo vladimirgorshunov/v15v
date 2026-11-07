@@ -9,44 +9,40 @@
     "typecheck": "tsc --noEmit",
     "typecheck:studio": "bun run --cwd sanity typecheck",
     "typecheck:all": "bun run typecheck && bun run typecheck:studio",
-    "lint": "eslint src tests vite.config.ts playwright.config.ts",
-    "format": "prettier --write .",
+    "format": "bun fmt",
     "test": "bun run test:unit && bun run test:e2e",
     "test:unit": "bun test tests/unit",
     "test:e2e": "playwright test",
-    "check": "bun run typecheck && bun run lint && bun run test:unit && bun run build"
+    "check": "bun run typecheck && bun lint && bun run test:unit && bun run build"
   },
   "dependencies": {
     "@fontsource/arvo": "5.3.0",
     "@fontsource/pt-serif": "5.3.0",
     "@portabletext/react": "8.0.1",
     "@sanity/client": "8.9.0",
-    "@tanstack/react-router": "1.170.44",
-    "@tanstack/react-start": "1.169.1",
-    "@tanstack/router-plugin": "1.168.45",
-    "nitro": "3.0.260903-beta",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
+    "@tanstack/react-router": "1.170.46",
+    "@tanstack/react-start": "1.169.4",
+    "@tanstack/router-plugin": "1.168.48",
+    "nitro": "3.0.261103-rc",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "vite-tsconfig-paths": "6.1.1"
   },
   "devDependencies": {
-    "@playwright/test": "1.64.1",
-    "@tanstack/devtools-vite": "0.8.5",
-    "@tanstack/eslint-config": "0.4.0",
-    "@types/node": "24.19.2",
+    "@playwright/test": "1.65.0",
+    "@tanstack/devtools-vite": "0.8.6",
+    "@types/node": "26.6.6",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@typescript/native": "npm:typescript@7.0.2",
-    "@vitejs/plugin-react": "6.1.2",
-    "bun-types": "1.4.3",
-    "eslint": "10.12.0",
-    "jsdom": "30.1.2",
-    "prettier": "3.9.10",
+    "@vitejs/plugin-react": "6.2.1",
+    "bun-types": "1.4.4",
+    "jsdom": "30.1.3",
     "typescript": "npm:@typescript/typescript6@6.0.2",
-    "vite": "8.3.4"
+    "vite": "8.3.6"
   },
   "engines": {
-    "bun": ">=1.4.3",
-    "node": ">=24.15.0"
+    "bun": ">=1.4.4-canary.20261106.1",
+    "node": ">=26.13.0"
   }
 }

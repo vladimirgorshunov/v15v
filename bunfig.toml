@@ -1,0 +1,60 @@
+[fmt]
+semi = false
+singleQuote = true
+trailingComma = "all"
+ignorePatterns = ["src/routeTree.gen.ts", "sanity/"]
+
+[lint]
+typeAware = true
+ignorePatterns = ["src/routeTree.gen.ts", "sanity/"]
+
+[lint.rules]
+"no-shadow" = "warn"
+"no-var" = "error"
+"prefer-const" = "error"
+"sort-imports" = ["error", { ignoreDeclarationSort = true }]
+"@typescript-eslint/array-type" = [
+  "error",
+  { default = "generic", readonly = "generic" },
+]
+"@typescript-eslint/ban-ts-comment" = [
+  "error",
+  { "ts-expect-error" = false, "ts-ignore" = "allow-with-description" },
+]
+"@typescript-eslint/consistent-type-imports" = [
+  "error",
+  { prefer = "type-imports" },
+]
+"@typescript-eslint/method-signature-style" = ["error", "property"]
+"@typescript-eslint/naming-convention" = [
+  "error",
+  { selector = "typeParameter", format = ["PascalCase"], leadingUnderscore = "forbid", trailingUnderscore = "forbid", custom = { regex = "^(T|T[A-Z][A-Za-z]+)$", match = true } },
+]
+"@typescript-eslint/no-inferrable-types" = [
+  "error",
+  { ignoreParameters = true },
+]
+"@typescript-eslint/no-unnecessary-condition" = "error"
+"@typescript-eslint/no-unnecessary-type-assertion" = "error"
+"@typescript-eslint/only-throw-error" = "off"
+"@typescript-eslint/prefer-for-of" = "warn"
+"@typescript-eslint/require-await" = "warn"
+"import/consistent-type-specifier-style" = ["error", "prefer-top-level"]
+"import/first" = "error"
+"import/newline-after-import" = "error"
+"import/no-commonjs" = "error"
+"import/no-duplicates" = "error"
+"import/order" = [
+  "error",
+  { groups = [
+    "builtin",
+    "external",
+    "internal",
+    "parent",
+    "sibling",
+    "index",
+    "object",
+    "type",
+  ] },
+]
+"unicorn/prefer-node-protocol" = "error"

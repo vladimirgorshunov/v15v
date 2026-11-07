@@ -1,10 +1,10 @@
-import styles from './AboutContent.module.css'
 import {
   ABOUT_INTRO_TEMPLATE,
   CONTACT_LINKS,
   CV_URL,
 } from '@/content/siteContent'
 import { calculateYearsOfExperience } from '@/lib/experience'
+import styles from './AboutContent.module.css'
 
 export const AboutContent = () => {
   const yearsOfExperience = calculateYearsOfExperience()
