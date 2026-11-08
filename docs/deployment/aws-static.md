@@ -379,3 +379,81 @@ by making the bucket public or adding object-read permissions to the deployer.
 For artifact validation failures, inspect the selected source and generated
 Lambda output. Never restore an HTML error fallback. Infrastructure repairs
 require separately authorized administration, not broader deploy-role privileges.
+
+## 8. Infrastructure ownership (AWS CDK)
+
+`infrastructure/bin/v15v.ts` synthesizes two L1-only stacks in account
+`031152122952`, region `eu-north-1`:
+
+- `V15vSite`: the bucket and its policy (**managed bucket mode**), Lambda
+  execution role and log group, function and alias Function URL, CloudFront
+  invocation permissions, both OACs, redirect function, and distribution.
+- `V15vGithub`: the GitHub OIDC provider, existing site deploy role
+  `github-actions-v15v-deploy`, its customer-managed policy, and the dedicated
+  `v15v-infra-deploy` and `v15v-infra-preview` roles.
+
+Every resource uses `DeletionPolicy: Retain` and `UpdateReplacePolicy: Retain`.
+Both stacks and the default `CDKToolkit` bootstrap stack have termination
+protection. Logical IDs are locked by `tests/unit/infrastructure.test.ts`;
+renaming or moving constructs can replace production resources.
+
+The legacy `v15v-prod-frontend` stack was deleted only after its four resources
+had verified retention policies. Bucket policy, DNS records, and apex/www HTTP
+statuses were unchanged before and after deletion. Import evidence and live
+snapshots remain outside the repository in `$HOME/v15v-import/`.
+
+CDK deliberately does **not** own the ACM certificate, Route 53 records,
+published Lambda versions, `production` alias, old S3 objects, or unattached
+`v15v-navigation` function. `deploy-production.yml` remains the only publisher
+of Lambda code and versions and mover of the alias. Never change the inline
+`SsrFunction.Code.ZipFile` placeholder: importing does not execute it, but
+changing it later would overwrite application code.
+
+The imported LIVE redirect source uses CRLF. `.gitattributes` pins CRLF checkout
+for `infrastructure/cloudfront-about-redirect.js` on every platform so a Linux
+runner does not propose a byte-only `FunctionCode` update. Keep reading that
+file directly; do not normalize it differently in CDK or the edge emulator.
+
+Use the pinned CLI through Bun:
+
+```bash
+bun install --frozen-lockfile
+bun run test:unit
+bunx cdk synth
+AWS_PROFILE=v15v-admin AWS_REGION=eu-north-1 bunx cdk diff
+AWS_PROFILE=v15v-admin AWS_REGION=eu-north-1 bunx cdk drift V15vSite
+AWS_PROFILE=v15v-admin AWS_REGION=eu-north-1 bunx cdk drift V15vGithub
+```
+
+Use only non-root `v15v-admin` for local administration. Do not re-import or
+bootstrap another region. Bootstrap qualifier is `hnb659fds`; asset-free stack
+synthesizers disable the unused bootstrap-version rule to match imported
+templates. CloudFormation reports the site bucket policy as unchecked; verify
+its live JSON separately. Application code publication remains outside CDK.
+
+`.github/workflows/infrastructure.yml` previews same-repository pull requests
+using `AWS_INFRA_PREVIEW_ROLE_ARN`. Fork previews are skipped; never use
+`pull_request_target` to execute untrusted infrastructure source with credentials.
+The preview trust accepts only `repo:vladimirgorshunov/v15v:pull_request` and
+audience `sts.amazonaws.com`. It can assume only the bootstrap lookup role,
+not the deploy or publishing roles.
+
+Pushes to `master` and manual runs deploy through the `infrastructure`
+environment using its `AWS_INFRA_ROLE_ARN` secret. That environment permits only
+the `master` branch, no tags, and has no required reviewers. The workflow also
+guards its branch before checking out `master`. Deployments are serialized
+without cancelling an active run, execute unit tests, show a template-only diff,
+and run `bunx cdk deploy --all --require-approval never`. The deploy role can
+assume only the default bootstrap deploy, file-publishing, and lookup roles.
+
+Live values win over examples above: the bucket policy Sid is
+`AllowV15vCloudFrontReadOnly` (not `AllowProductionCloudFrontRead`), and the
+site deploy policy also grants `s3:GetBucketLocation` in `BucketMetadata`.
+The bucket retains its unused `index.html` website index/error configuration,
+while CloudFront uses the private REST endpoint. No permission hardening is
+part of this import; `s3:DeleteObject` remains unchanged.
+
+Normal infrastructure changes must go through CDK rather than direct service
+API updates. If emergency manual rollback from section 6 is necessary, reconcile
+the CDK source with the restored live settings before another infrastructure
+deployment.

@@ -1,0 +1,2 @@
+# Preserve the imported LIVE CloudFront function bytes on every runner.
+infrastructure/cloudfront-about-redirect.js text eol=crlf
