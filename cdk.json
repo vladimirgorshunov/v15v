@@ -1,0 +1,4 @@
+{
+  "app": "bun infrastructure/bin/v15v.ts",
+  "output": "cdk.out"
+}

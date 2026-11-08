@@ -1,0 +1,119 @@
+name: Infrastructure
+
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - infrastructure/**
+      - cdk.json
+      - package.json
+      - bun.lock
+      - .github/workflows/infrastructure.yml
+  push:
+    branches: [master]
+    paths:
+      - infrastructure/**
+      - cdk.json
+      - package.json
+      - bun.lock
+      - .github/workflows/infrastructure.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 26.13.0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2.2.0
+        with:
+          bun-version: canary
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Configure AWS preview credentials
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: ${{ secrets.AWS_INFRA_PREVIEW_ROLE_ARN }}
+          aws-region: eu-north-1
+
+      - name: Preview infrastructure changes
+        run: |
+          set -o pipefail
+          bunx cdk diff --all --no-change-set 2>&1 | tee cdk-diff.txt
+          {
+            echo '```text'
+            cat cdk-diff.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-26.04
+    environment: infrastructure
+    concurrency:
+      group: infrastructure-deploy
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Require the protected workflow branch
+        env:
+          WORKFLOW_REF: ${{ github.ref }}
+        run: |
+          test "$WORKFLOW_REF" = refs/heads/master || {
+            echo "Infrastructure deployments must run the workflow from master"
+            exit 1
+          }
+
+      - name: Checkout master
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: master
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 26.13.0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2.2.0
+        with:
+          bun-version: canary
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Unit tests
+        run: bun run test:unit
+
+      - name: Configure AWS deployment credentials
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: ${{ secrets.AWS_INFRA_ROLE_ARN }}
+          aws-region: eu-north-1
+
+      - name: Preview infrastructure changes
+        run: bunx cdk diff --all --no-change-set
+
+      - name: Deploy infrastructure
+        run: bunx cdk deploy --all --require-approval never
