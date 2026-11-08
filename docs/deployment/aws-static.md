@@ -409,6 +409,11 @@ of Lambda code and versions and mover of the alias. Never change the inline
 `SsrFunction.Code.ZipFile` placeholder: importing does not execute it, but
 changing it later would overwrite application code.
 
+The imported LIVE redirect source uses CRLF. `.gitattributes` pins CRLF checkout
+for `infrastructure/cloudfront-about-redirect.js` on every platform so a Linux
+runner does not propose a byte-only `FunctionCode` update. Keep reading that
+file directly; do not normalize it differently in CDK or the edge emulator.
+
 Use the pinned CLI through Bun:
 
 ```bash
@@ -423,8 +428,8 @@ AWS_PROFILE=v15v-admin AWS_REGION=eu-north-1 bunx cdk drift V15vGithub
 Use only non-root `v15v-admin` for local administration. Do not re-import or
 bootstrap another region. Bootstrap qualifier is `hnb659fds`; asset-free stack
 synthesizers disable the unused bootstrap-version rule to match imported
-templates. Drift detection may leave Lambda code unchecked; application
-publication is intentionally outside CDK.
+templates. CloudFormation reports the site bucket policy as unchecked; verify
+its live JSON separately. Application code publication remains outside CDK.
 
 `.github/workflows/infrastructure.yml` previews same-repository pull requests
 using `AWS_INFRA_PREVIEW_ROLE_ARN`. Fork previews are skipped; never use
