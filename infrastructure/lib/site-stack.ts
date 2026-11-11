@@ -106,7 +106,6 @@ export class SiteStack extends Stack {
       description: '',
       memorySize: 1024,
       timeout: 10,
-      reservedConcurrentExecutions: 10,
       packageType: 'Zip',
       ephemeralStorage: { size: 512 },
       tracingConfig: { mode: 'PassThrough' },
