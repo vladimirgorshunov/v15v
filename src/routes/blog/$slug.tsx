@@ -1,6 +1,7 @@
 import { PortableText } from '@portabletext/react'
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
+import { BlogUnavailable } from '@/components/blog/BlogUnavailable'
 import styles from '@/components/blog/blogRoutes.module.css'
 import { portableTextComponents } from '@/components/blog/portableTextComponents'
 import { formatPostDate, getBlogPostBySlug } from '@/lib/blog'
@@ -37,4 +38,5 @@ export const Route = createFileRoute('/blog/$slug')({
     return { post }
   },
   component: BlogPostRoute,
+  errorComponent: BlogUnavailable,
 })

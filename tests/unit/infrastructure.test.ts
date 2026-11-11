@@ -19,6 +19,12 @@ const siteIds = [
   'LambdaOriginAccessControl',
   'AboutRedirectFunction',
   'Distribution',
+  'AlarmTopic',
+  'SanityFailureMetricFilter',
+  'SsrErrorsAlarm',
+  'SsrThrottlesAlarm',
+  'SsrUrl5xxAlarm',
+  'SanityFailureAlarm',
 ]
 const githubIds = [
   'GithubOidcProvider',

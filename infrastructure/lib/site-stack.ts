@@ -1,10 +1,12 @@
 import { readFileSync } from 'node:fs'
 import { Fn, Stack } from 'aws-cdk-lib'
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront'
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch'
 import * as iam from 'aws-cdk-lib/aws-iam'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as logs from 'aws-cdk-lib/aws-logs'
 import * as s3 from 'aws-cdk-lib/aws-s3'
+import * as sns from 'aws-cdk-lib/aws-sns'
 import {
   ACCOUNT,
   BUCKET_NAME,
@@ -317,6 +319,77 @@ export class SiteStack extends Stack {
       principal: 'cloudfront.amazonaws.com',
       sourceArn: `arn:aws:cloudfront::${ACCOUNT}:distribution/${distribution.ref}`,
     })
+
+    const alarmTopic = new sns.CfnTopic(this, 'AlarmTopic', {
+      topicName: 'v15v-alarms',
+    })
+
+    new logs.CfnMetricFilter(this, 'SanityFailureMetricFilter', {
+      logGroupName: logGroup.ref,
+      filterName: 'v15v-sanity-fetch-failed',
+      // Matches the event literal logged by src/lib/blog.ts.
+      filterPattern: '"sanity_fetch_failed"',
+      metricTransformations: [
+        {
+          metricNamespace: 'V15v',
+          metricName: 'SanityFetchFailures',
+          metricValue: '1',
+        },
+      ],
+    })
+
+    const ssrDimensions = [{ name: 'FunctionName', value: FUNCTION_NAME }]
+    const alarms = [
+      [
+        'SsrErrorsAlarm',
+        'v15v-ssr-errors',
+        'AWS/Lambda',
+        'Errors',
+        ssrDimensions,
+      ],
+      [
+        'SsrThrottlesAlarm',
+        'v15v-ssr-throttles',
+        'AWS/Lambda',
+        'Throttles',
+        ssrDimensions,
+      ],
+      [
+        'SsrUrl5xxAlarm',
+        'v15v-ssr-url-5xx',
+        'AWS/Lambda',
+        'Url5xxCount',
+        ssrDimensions,
+      ],
+      [
+        'SanityFailureAlarm',
+        'v15v-sanity-fetch-failures',
+        'V15v',
+        'SanityFetchFailures',
+        [],
+      ],
+    ] as const
+    for (const [
+      alarmId,
+      alarmName,
+      namespace,
+      metricName,
+      dimensions,
+    ] of alarms) {
+      new cloudwatch.CfnAlarm(this, alarmId, {
+        alarmName,
+        namespace,
+        metricName,
+        dimensions: [...dimensions],
+        statistic: 'Sum',
+        period: 300,
+        evaluationPeriods: 1,
+        threshold: 1,
+        comparisonOperator: 'GreaterThanOrEqualToThreshold',
+        treatMissingData: 'notBreaching',
+        alarmActions: [alarmTopic.ref],
+      })
+    }
 
     retainAll(this)
   }
