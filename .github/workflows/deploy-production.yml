@@ -19,6 +19,9 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  BUN_VERSION: 1.4.4-canary.20261108.1
+
 jobs:
   verify:
     name: Verify deployment commit
@@ -67,9 +70,9 @@ jobs:
           node-version: 26.13.0
 
       - name: Setup Bun
-        uses: oven-sh/setup-bun@v2.2.0
-        with:
-          bun-version: canary
+        run: |
+          npm install --global "bun@$BUN_VERSION"
+          bun --revision
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -216,13 +219,53 @@ jobs:
           done
 
       - name: Switch production alias
+        id: switch
         env:
           LAMBDA_FUNCTION_NAME: ${{ vars.LAMBDA_FUNCTION_NAME }}
           VERSION: ${{ steps.publish.outputs.version }}
         run: |
           previous="$(aws lambda get-alias --function-name "$LAMBDA_FUNCTION_NAME" --name "$LAMBDA_ALIAS" --query FunctionVersion --output text)"
+          echo "previous=$previous" >> "$GITHUB_OUTPUT"
           aws lambda update-alias --function-name "$LAMBDA_FUNCTION_NAME" --name "$LAMBDA_ALIAS" --function-version "$VERSION"
           echo "Lambda $LAMBDA_ALIAS: $previous -> $VERSION (rollback: aws lambda update-alias --function-name $LAMBDA_FUNCTION_NAME --name $LAMBDA_ALIAS --function-version $previous)" | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Verify live site
+        id: live
+        env:
+          SITE_URL: https://v15v.com
+        run: |
+          set -euo pipefail
+          live_ok() {
+            local html assets asset blog
+            html="$(curl -fsS --max-time 15 "$SITE_URL/")" || return 1
+            grep -q 'I am a web-developer with' <<< "$html" || return 1
+            assets="$(grep -oE '/assets/[A-Za-z0-9._-]+' <<< "$html" | sort -u)" || return 1
+            test -n "$assets" || return 1
+            while IFS= read -r asset; do
+              test -f "site-public$asset" || return 1
+              curl -fsS --max-time 15 -o /dev/null "$SITE_URL$asset" || return 1
+            done <<< "$assets"
+            blog="$(curl -fsS --max-time 15 "$SITE_URL/blog")" || return 1
+            grep -q '<h1' <<< "$blog" || return 1
+          }
+          for attempt in 1 2 3 4 5 6; do
+            if live_ok; then
+              echo "Live site serves this build (attempt $attempt)"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Live verification failed"
+          exit 1
+
+      - name: Revert production alias
+        if: failure() && steps.live.outcome == 'failure'
+        env:
+          LAMBDA_FUNCTION_NAME: ${{ vars.LAMBDA_FUNCTION_NAME }}
+          PREVIOUS: ${{ steps.switch.outputs.previous }}
+        run: |
+          aws lambda update-alias --function-name "$LAMBDA_FUNCTION_NAME" --name "$LAMBDA_ALIAS" --function-version "$PREVIOUS"
+          echo "Live verification failed; Lambda $LAMBDA_ALIAS reverted to $PREVIOUS" | tee -a "$GITHUB_STEP_SUMMARY"
 
       - name: Invalidate CloudFront cache
         env:
