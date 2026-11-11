@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, mock, test } from 'bun:test'
+import { afterEach, describe, expect, mock, spyOn, test } from 'bun:test'
 
 // Configure a real client before importing the modules that capture Vite's env.
 const previousProjectId = process.env.VITE_SANITY_PROJECT_ID
@@ -74,14 +74,30 @@ describe('Sanity blog reads', () => {
     expect(await getBlogPostBySlug('missing-post')).toBeNull()
   })
 
-  test('preserves empty results when CMS reads fail', async () => {
+  test('rejects and logs when CMS reads fail', async () => {
     sanityClient.config({
       resolveFetch: () => () =>
         Promise.resolve(new Response('Server error', { status: 500 })),
     })
-
-    expect(await getBlogPosts()).toEqual([])
-    expect(await getBlogPostBySlug(post.slug)).toBeNull()
+    const logged = spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      await expect(getBlogPosts()).rejects.toThrow(
+        'Blog content is temporarily unavailable.',
+      )
+      await expect(getBlogPostBySlug(post.slug)).rejects.toThrow(
+        'Blog content is temporarily unavailable.',
+      )
+      const events = logged.mock.calls
+        .map(([line]) => String(line))
+        .filter((line) => line.includes('sanity_fetch_failed'))
+        .map((line) => JSON.parse(line) as { event: string; query: string })
+      expect(events).toMatchObject([
+        { event: 'sanity_fetch_failed', query: 'posts' },
+        { event: 'sanity_fetch_failed', query: 'post' },
+      ])
+    } finally {
+      logged.mockRestore()
+    }
   })
 
   test('returns safe results without CMS configuration in a fresh process', () => {

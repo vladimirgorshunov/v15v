@@ -1,5 +1,6 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 
+import { BlogUnavailable } from '@/components/blog/BlogUnavailable'
 import styles from '@/components/blog/blogRoutes.module.css'
 import { formatPostDate, getBlogPosts } from '@/lib/blog'
 import { isSanityConfigured } from '@/lib/sanity'
@@ -60,4 +61,5 @@ export const Route = createFileRoute('/blog/')({
     return { posts }
   },
   component: BlogIndexRoute,
+  errorComponent: BlogUnavailable,
 })

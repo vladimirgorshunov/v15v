@@ -58,6 +58,18 @@ const POST_BY_SLUG_QUERY = `*[_type == "post" && slug.current == $slug][0] {
   }
 }`
 
+// `sanity_fetch_failed` is matched by SanityFailureMetricFilter in infrastructure/lib/site-stack.ts.
+const sanityFailure = (query: 'posts' | 'post', error: unknown): Error => {
+  console.error(
+    JSON.stringify({
+      event: 'sanity_fetch_failed',
+      query,
+      message: error instanceof Error ? error.message : String(error),
+    }),
+  )
+  return new Error('Blog content is temporarily unavailable.')
+}
+
 export const getBlogPosts = async (): Promise<Array<BlogPostListItem>> => {
   if (!isSanityConfigured || !sanityClient) {
     return []
@@ -65,8 +77,8 @@ export const getBlogPosts = async (): Promise<Array<BlogPostListItem>> => {
 
   try {
     return await sanityClient.fetch<Array<BlogPostListItem>>(POSTS_QUERY)
-  } catch {
-    return []
+  } catch (error) {
+    throw sanityFailure('posts', error)
   }
 }
 
@@ -81,8 +93,8 @@ export const getBlogPostBySlug = async (
     return await sanityClient.fetch<BlogPost | null>(POST_BY_SLUG_QUERY, {
       slug,
     })
-  } catch {
-    return null
+  } catch (error) {
+    throw sanityFailure('post', error)
   }
 }
 
