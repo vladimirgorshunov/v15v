@@ -106,6 +106,7 @@ export class SiteStack extends Stack {
       description: '',
       memorySize: 1024,
       timeout: 10,
+      reservedConcurrentExecutions: 10,
       packageType: 'Zip',
       ephemeralStorage: { size: 512 },
       tracingConfig: { mode: 'PassThrough' },
@@ -171,6 +172,8 @@ export class SiteStack extends Stack {
       },
     )
 
+    const securityHeadersPolicyId = '67f7725c-6f97-4210-82d7-5512b31e9d03' // AWS managed SecurityHeadersPolicy
+
     const distribution = new cloudfront.CfnDistribution(this, 'Distribution', {
       distributionConfig: {
         aliases: ['v15v.com', 'www.v15v.com'],
@@ -229,6 +232,7 @@ export class SiteStack extends Stack {
           fieldLevelEncryptionId: '',
           cachePolicyId: '4135ea2d-6df8-44a3-9df3-4b5a84be39ad',
           originRequestPolicyId: 'b689b0a8-53d0-40ab-baf2-68738e2966ac',
+          responseHeadersPolicyId: securityHeadersPolicyId,
           grpcConfig: { enabled: false },
         },
         cacheBehaviors: [
@@ -249,6 +253,7 @@ export class SiteStack extends Stack {
           lambdaFunctionAssociations: [],
           functionAssociations: [],
           fieldLevelEncryptionId: '',
+          responseHeadersPolicyId: securityHeadersPolicyId,
           grpcConfig: { enabled: false },
           forwardedValues: {
             queryString: false,
